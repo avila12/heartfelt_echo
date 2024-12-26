@@ -6,6 +6,12 @@ This Flask-based web application tools to aid those affected by dementia.
 
 ---
 
+## Status
+
+**Work in Progress**: This application is not ready for production. Features and functionality are still under development.
+
+---
+
 ## Features
 
 ---
