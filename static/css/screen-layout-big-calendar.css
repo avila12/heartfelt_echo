@@ -1,0 +1,690 @@
+/** 
+ * screen-layout-big-calendar.css
+ * 
+ * This file contains overrides for the big calendar layout
+ */
+ header {
+	 height:690px;
+	width:100%;
+	bottom:0;
+	position: relative; 
+	top: 0; 
+	z-index: 100;}
+
+header:after {
+    content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.75) 100%);
+}
+
+.weather-container {
+	float: right; 
+	text-align: right; 
+	}
+
+.weather-container.weather-parent {
+	position: absolute;
+	bottom: 0px;
+	right: 0;
+	padding-right: 20px;
+	z-index: 12;
+}
+.clock-container {
+	float: left;
+	/*padding-top: 40px;*/
+	position: absolute; 
+	top: 10px;
+	padding-top: 0; 
+	padding-left: 20px; 
+	z-index: 12;
+}
+.date {
+	padding: 0 0 20px 20px;
+}
+.date-container {
+	position: absolute; 
+	top: 0;
+	right: 0;
+	width: 100%;
+	padding-top: 100px;
+	z-index:12;
+	margin-bottom: 25px;
+}
+.date-container.with-photos {
+	
+}
+.events {
+	width: 100%;
+	background: #000;
+	z-index: 99;
+	/*position: fixed;*/
+}
+.events .legend {
+	font-size: .6em;
+	padding: 1em 1em 1em 1.6em;
+	opacity: 0.8;
+	background: rgba(100,100,100,.3);
+	text-align: center; /* Fallback for text alignment */
+	/*margin-top: .5em;*/
+}
+@media only screen and (orientation : landscape) {
+	header {
+		float: left;
+		width: 38.2%;
+		padding-top:0;
+	}
+	.clock {
+		width:100%;
+		text-align: right;
+	}
+	.clock-container {
+		/*bottom:inherit;*/
+		top: 0;
+		bottom: 60px;
+		padding-left: 0;
+		position: relative;
+	}
+	.time {
+		padding: 20px 20px 0 0;
+	}
+	.date-container {
+		padding-top: 0;
+		position: relative;
+		margin-bottom: 0;
+	}
+	.date {
+	    padding: 110px 20px 0 0;
+	    text-align: right;
+	}
+	.weather-container {
+		padding-right: 0;
+		margin-bottom: 0;
+	}
+	.weather-container.weather-parent {
+		bottom: 0px;
+	}
+	
+	header:after {
+		background-image: linear-gradient(to right, rgba(0,0,0,0) 50%, rgba(0,0,0,0.75) 100%), linear-gradient(to bottom, rgba(0,0,0,0) 85%, rgba(0,0,0,0.65) 100%);
+	}
+	.events {
+		/*top: 20px;*/
+		height: 100%;
+		left: 38.2%;
+		width: 61.8%;
+		float: left;
+		position: fixed;
+		overflow: scroll;
+	}
+	.events table {
+		height: 100%;
+	}
+	.events .legend {
+		padding: 1em 1em 1em 1.6em;
+	}
+}
+
+.time .sec {
+	font-size: .4em;
+	color: #fff;
+	padding-left: 5px;
+	position: relative;
+	top: -1em;
+}
+.time-ampm {
+	font-size: .3em;
+	color: rgba(255,255,255,0.8);
+	padding-left: 5px;
+	position: relative;
+}
+
+/**
+ * Photo-related classes
+ * ---------------------------------------- */
+
+
+/**
+ *  Event classes/colors
+ * ---------------------------------------- */
+.day {
+	text-transform: uppercase;
+	font-size: .8em;
+}
+.events table {
+	width: 100%;
+}
+.events th {
+	font-weight: 300;
+	width: 14.2857142857%;
+}
+.events tbody td {
+	vertical-align: top;
+	width: 14.2857142857%;
+	padding: 2em 2px 0 2px;
+}
+.events .legend>small {
+	opacity: 0.65;
+}
+.event-date {
+	font-size: 3em;
+	font-weight: 300;
+	text-align: center;
+	margin-bottom: 10px;
+}
+th .event-date {
+	font-size: 2em;
+	margin-bottom: 0;
+}
+.event-date.today {
+	color: #fff;
+    background: #c40d0d;
+    border-radius: 50%;
+    height: 1.3em;
+    width: 1.5em;
+    margin: -10px auto 5px auto;
+    padding-top: 10px;
+}
+.event-day.disabled,
+.event-items.disabled {
+	opacity: .5;
+}
+.event-day ul {
+	font-size: .65em;
+}
+.event-day li {
+	margin: 0 0 12px 0;
+	word-break: break-word;
+}
+li.event-all-day {
+	margin-bottom:5px;
+}
+.event-all-day {
+	padding: 2px 4px;
+	border-radius: 2px;
+	color: #fff;
+	background: rgba(0,0,0,.5);
+}
+
+/* classes for agenda view */
+.day-container {
+	padding: .5em 1em;
+}
+/*
+.day-container li {
+	padding: .5em;
+	background: rgba(255,255,255,0.1);
+	margin-bottom: .5em;
+	border-left: 4px solid #444;
+	border-radius: 3px;
+}*/
+.day-container .time-container {
+	font-weight: bold;
+	margin-bottom: .25em;
+}
+
+.day-container .ampm {
+	font-size: .65em;
+	text-transform: uppercase;
+	opacity:0.8;
+	font-weight: 400;
+}
+.day-container .event-description {
+	font-size: .7em;
+
+}
+.day-container .location .location-label {
+	font-size: .7em;
+	color: rgba(255,255,255,0.3);
+}
+.day-container .location {
+	float: right;
+	width: 35%;
+	font-size: .7em;
+}
+
+.events:before {
+  content:'';
+  width:100%;
+  height:100%;    
+  position:absolute;
+  left:0;
+  top:0;
+  /*background:linear-gradient(transparent 150px, white);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(41,41,41,0) 84%, rgba(0,0,0,1) 100%);
+  */
+}
+
+.event-bullet {
+	display: inline-block;
+	height: 8px;
+	width: 8px;
+	border-radius: 50%;
+	background: rgba(0,0,0,.5);
+	margin-bottom: 0.2em;
+}
+.event-white {
+	background: #444444;}
+.event-icon-white {
+	color: #444444;}
+li.white {
+	border-color: #444444}
+.event-grey {
+	background: #666666;}
+.event-icon-grey {
+	color: #666666;}
+li.grey {
+	border-color: #666666}
+.event-lt-grey {
+	background: #999999;}
+.event-icon-lt-grey {
+	color: #999999;}
+li.lt-grey {
+	border-color: #999999}
+.event-red {
+	background: #ce3d3d;}
+.event-icon-red {
+	color: #ce3d3d;}
+li.red {
+	border-color: #ce3d3d}
+
+.event-orange {
+	background: #cc8941;}
+.event-icon-orange {
+	color: #cc8941;}
+li.orange {
+	border-color: #cc8941}
+
+.event-yellow {
+	background: #d3b80b;}
+.event-icon-yellow {
+	color: #d3b80b;}
+li.yellow {
+	border-color: #d3b80b}
+	
+.event-green {
+	background: #15b72a;}
+.event-icon-green {
+	color: #15b72a;}
+li.green {
+	border-color: #15b72a}
+	
+.event-teal {
+	background: #13c193;}
+.event-icon-teal {
+	color: #13c193;}
+li.teal {
+	border-color: #13c193}
+
+.event-blue {
+	background: #0e87c4;}
+.event-icon-blue {
+	color: #0e87c4;}
+li.blue {
+	border-color: #0e87c4}
+
+.event-purple {
+	background: #3e28ba;}
+.event-icon-purple {
+	color: #3e28ba;}
+li.purple {
+	border-color: #3e28ba}
+		
+.event-pink {
+	background: #c857ac;}
+.event-icon-pink {
+	color: #c857ac;}
+li.pink {
+	border-color: #c857ac}
+	
+.event-red-bright {
+	background: #ff4f4f;}
+.event-icon-red-bright {
+	color: #ff4f4f;}
+li.red-bright {
+	border-color: #ff4f4f}
+	
+.event-orange-bright {
+	background: #ffb04f;}
+.event-icon-orange-bright {
+	color: #ffb04f;}
+li.orange-bright {
+	border-color: #ffb04f}
+
+.event-yellow-bright {
+	background: #e6ea02;}
+.event-icon-yellow-bright {
+	color: #e6ea02;}
+li.yellow-bright {
+	border-color: #fcff4f}
+	
+.event-green-bright {
+	background: #30da46;}
+.event-icon-green-bright {
+	color: #30da46;}
+li.green-bright {
+	border-color: #28e840;}
+
+.event-teal-bright {
+	background: #27e8d8;}
+.event-icon-teal-bright {
+	color: #27e8d8;}
+li.teal-bright {
+	border-color: #27e8d8}
+	
+.event-blue-bright {
+	background: #68baff;}
+.event-icon-blue-bright {
+	color: #68baff;}
+li.blue-bright {
+	border-color: #68baff;}
+
+.event-pink-bright {
+	background: #fd79ff;}
+.event-icon-pink-bright {
+	color: #fd79ff;}
+li.pink-bright {
+	border-color: #fd79ff}
+
+
+
+/**
+ *  Event classes - Agenda calendar
+ * ---------------------------------------- */
+.calendar-agenda .calendar-table {
+	height: 100%;
+}
+.calendar-agenda .calendar-table td {
+	padding: 15px;
+	vertical-align: top;
+}
+.calendar-agenda-dark {
+	color: rgba(0,0,0,.7);
+	text-shadow: none;
+}
+.calendar-agenda .calendar .day-container {
+	padding: 15px 0 0 15px;
+}
+.calendar-agenda .calendar {
+	margin-bottom: 20px;
+}
+.calendar-agenda .calendar {
+	overflow: hidden;
+}
+.calendar-agenda  .day-container {
+	/*margin-bottom: 2em;*/
+}
+.calendar-agenda  .event-summary {
+	/*margin-left: 80px;*/
+	margin-left: 3.75em;
+}
+
+.calendar-agenda .day-container {
+	word-break: break-word;
+}
+
+.calendar-agenda-horiz .day-container {
+	padding-left: .65em;
+}
+.calendar-agenda-horiz .day-container:first-child {
+	padding-left: 0;
+}
+
+.calendar-agenda-horiz .day-container {
+	width: 15em;
+}
+
+.agenda-day-header {
+	border-bottom: 1px solid rgba(255,255,255,.3); 
+	padding-bottom: .3em;
+}
+.calendar-agenda-dark .agenda-day-header {
+	border-bottom: 1px solid rgba(0,0,0,.2); 
+}
+.agenda-day-header .agenda-day-header-num {
+	font-size: 150%;
+	font-weight:300;
+	opacity:.8;
+}
+.agenda-day-header-num, .agenda-event-time {
+	font-family: Rubik, Consolas, monaco, monospace;
+}
+.agenda-event-time {
+	float: left; 
+	opacity: .65; 
+	font-size: 90%;
+	font-weight: 500;
+	padding-top: .05em;
+}
+.calendar-agenda-horiz .agenda-event-time {
+	float: none;
+}
+.agenda-event-time-end {
+	font-size: 90%;
+	font-weight: 300;
+}
+
+.agenda-event-summary {
+	font-weight: 500;
+}
+.agenda-event-description {
+	opacity: .65;
+	margin-top: .3em;
+	font-size: 90%;
+}
+.calendar-agenda-horiz .agenda-event-summary {
+	padding-top: .3em; 
+}
+.calendar-agenda-horiz .agenda-event-time-start {
+	float: left;
+	margin-right: .35em;
+}
+.has-event-background .agenda-event-time-end {
+	margin-bottom: .2em;
+}
+.calendar-agenda-horiz .agenda-event-time-end {
+	float: left;
+	margin-bottom: 0;
+}
+.calendar-agenda-horiz .agenda-event-time-end:before {
+	content: "- ";
+}
+.agenda-event-day-count {
+	font-size: 85%;
+	opacity: .6; 
+	margin-top: .3em;
+}
+.agenda-event-location {
+	margin-top: .3em;
+	margin-bottom: .1em;
+	font-size: 90%;
+	opacity: .5;
+}
+.agenda-no-events {
+	opacity: .35;
+	margin-top: 1em;
+}
+
+/* Make the vertical calendar display horizontally */
+.calendar-agenda.calendar-agenda-horiz {
+	display: table-row;
+}
+.calendar-agenda.calendar-agenda-horiz .day-container {
+	display: table-cell;
+}
+
+.calendar-agenda li {
+	border-left-width: .25em; 
+	border-left-style: solid; 
+	padding-left: .35em;
+}
+.calendar-monthly li {
+	color: #fff;
+}
+
+
+
+li.has-event-background.white {
+	background: #88888833;}
+li.has-event-background.grey {
+	background: #66666633;}
+li.has-event-background.lt-grey {
+	background: #99999933;}
+li.has-event-background.red {
+	background: #ce3d3d33;}
+li.has-event-background.orange {
+	background: #cc894133;}
+li.has-event-background.yellow {
+	background: #d3b80b33;}
+li.has-event-background.green {
+	background: #15b72a33;}
+li.has-event-background.teal {
+	background: #13c19333;}
+li.has-event-background.blue {
+	background: #0e87c433;}
+li.has-event-background.purple {
+	background: #3e28ba33;}
+li.has-event-background.pink {
+	background: #c857ac33;}
+li.has-event-background.red-bright {
+	background: #ff4f4f33;}
+li.has-event-background.orange-bright {
+	background: #ffb04f33;}
+li.has-event-background.yellow-bright {
+	background: #fcff4f33;}
+li.has-event-background.green-bright {
+	background: #30da4633;}
+li.has-event-background.teal-bright {
+	background: #27e8d833;}
+li.has-event-background.blue-bright {
+	background: #68baff33;}
+li.has-event-background.pink-bright {
+	background: #fd79ff33;}
+
+
+/**
+ * Weather styles
+ * ------------------------------------------------------ */
+.weather-current-icon {
+	font-size: 90%; }
+.weather-container .weather-forecast,
+.weather-container .weather-moon {
+	/*display: none;*/
+}
+.weather-container .weather-current-alt {
+	font-weight: 300;
+	text-align: right;
+	line-height: 1.6em;
+	margin-bottom: .65em;
+}
+.weather-alert {
+	z-index: 12;
+	position: relative;
+	width: 100%;
+}
+.weather-alert-inside {
+	padding: 20px;
+}
+.weather-alert-description {
+	margin-top: 3px;
+}
+.weather-alert-expires {
+	margin-top: 10px;
+}
+.weather-item .day {
+	font-size: 85%;
+	background: rgba(255,255,255,0.3);
+	border-radius: 20px;
+	padding: 5px 10px;
+	text-transform: uppercase;
+	margin-bottom:15px;
+}
+.weather-current {
+	margin-bottom:20px;
+}
+
+.weather-container {
+	float: right;
+}
+.weather-forecast {
+	display: table-cell;
+	padding-left: 25px;
+}
+.weather-forecast .wi,
+.weather-forecast .fas {
+	padding-bottom:10px;
+}
+.weather-forecast-item-high,
+.weather-forecast-item-low {
+	margin:0 5px;
+}
+.weather-forecast-5 {
+	/*display:none;*/
+}
+.weather-moon {
+	display:none;
+}
+.weather-pop {
+	color: #fff;
+	font-size: 70%;
+	margin-bottom: 1em;
+	margin-top: .5em;
+}
+
+/**
+ * RSS styles
+ * ------------------------------------------------------ */
+#rss img,
+.rss img {
+	display: none;
+}
+#rss {
+	position: fixed;
+    z-index: 100;
+    bottom: 0;
+    padding-left:20px;
+    overflow: hidden;
+    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 40%);
+    padding-top: 70px;
+	pointer-events: none; /* So pointer events can pass through, but reverted for Anchor tags */
+}
+#rss A { pointer-events: auto; }
+.rss-title, .rss-description {
+	padding-bottom: 5px;
+}
+
+@media only screen and (orientation : landscape) {
+	#rss {
+		width: 60.8%;
+		right: 0;
+		bottom: 20px;
+		padding-left:10px;
+	}
+}
+
+/**
+ * Clocks
+ * ------------------------------------------------------ */
+.date {
+	font-weight: 300;
+	font-size: 1.5em;
+}
+
+.day-of-week {
+	display: inline-block;
+	margin-right: 10px;
+}
+.month {
+	display: inline-block;
+}
+
+/**
+ * Message styles 
+ * ------------------------------------------------------ */
+#message {
+	position: absolute;
+	width: 100%;
+}

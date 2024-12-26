@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home Board </title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/screen-layout-big-calendar.css') }}">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-xVVam1KS4+Qt2OrFa+VdRUoXygyKIuNWUUUBZYv+n27STsJ7oDOHJgfF0bNKLMJF" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&amp;display=swap" rel="stylesheet">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
+    <link rel="icon" sizes="192x192" href="/static/img/apple-touch-icon.png">
+    <meta name="robots" content="noindex, nofollow">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        const contentExpiration = Date.now() + 21600000;
+    </script>
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment-timezone.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/progressbar.min.js') }}"></script>
+
+    <style>
+      .calendar-scrollable-container {
+        position: relative;
+        overflow: auto;
+        max-height: 95vh;
+      }
+
+      .calendar-agenda .day-container li {
+        clear: both;
+      }
+
+      /* Adjust margin for languages with long terms for "All day" */
+      .agenda-event-details {
+        margin-left: 5em;
+      }
+
+      .agenda-todo-details {
+        margin-left: 1em;
+      }
+
+      .calendar-agenda-horiz .agenda-event-details {
+        margin-left: 0;
+        clear: both;
+      }
+
+      .block-empty-error {
+        background: rgba(140, 140, 140, .8);
+        padding: 1.5em 1em;
+        opacity: .6;
+        text-align: center;
+      }
+
+      .block-empty-error-icon {
+        font-size: 1.8em;
+        margin-bottom: .4em
+      }
+
+      .agenda-day-header .day-forecast {
+        flex-grow: 0;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        float: right;
+        text-align: right; /* Optional: aligns text within the floated element */
+        }
+        .agenda-day-header .day-forecast > .weather-icon {
+            font-size: 150%;
+            line-height: 1.25em;
+        }
+        .agenda-day-header .day-forecast > SPAN {
+            padding-left: 0.5em;
+        }
+        .weather-icon {
+            font-size: 1.2em; /* Adjust size of the icon */
+        }
+        .forecast-low, .forecast-high {
+            font-weight: bold; /* Optional: styles for temperatures */
+        }
+
+        /* Consolidated and optimized styles */
+        .time-ampm { left: -1.4em; }
+        .brightness { background: rgba(0, 0, 0, 0); }
+        .block-empty-error { background: rgba(140, 140, 140, 0.8); padding: 1.5em 1em; opacity: 0.6; text-align: center; }
+        .block-empty-error-icon { font-size: 1.8em; margin-bottom: 0.4em; }
+
+        .layout-big-calendar #calendar { overflow: auto; max-height: 70vh; position: fixed; }
+
+        @media only screen and (orientation: landscape) {
+            .layout-big-calendar:not(.showing-time)
+            .date-container { display: none; }
+            .layout-big-calendar #calendar { max-height: 100vh; }
+        }
+
+        .weather-current-extra-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .feels-like-text {
+            margin-left: auto; /* Pushes the element to the right within the flex container */
+        }
+        .weather-current-right { text-align: right; }
+        .weather-extra-info { display: flex; gap: 10px; }
+        .weather-extra-info-item { display: inline-flex; align-items: center; }
+        .weather-extra-info-item span { margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+    <div id="network-offline" class="animated slideInLeft" style="display:none;">
+        <span class="fas fa-exclamation-triangle"></span>
+        <span id="dak-error-message">&nbsp;</span>
+{#        <button id="close-banner" onclick="document.getElementById('network-offline').style.display='none'">×</button>#}
+    </div>
+
+    <div class="font-large layout-big-calendar showing-calendar showing-weather showing-time">
+        <header>
+            <div id="weather" class="weather-container weather-parent">
+                <div class="block weather block-weather align-left text-left">
+                    <div class="weather-item weather-current">
+                        <div class="large weather-current-right">
+                            <span id="temperature">--</span><sup>°</sup>
+                            <span id="weather-current-icon" class="weather-current-icon fal fa-sun" title="Sunny"></span>
+                        </div>
+                        <div class="weather-current-extra-container">
+                            <div id="feels-like-text" class="feels-like-text">Feels like <span id="feelslike">--</span></div>
+                            <div class="weather-extra-info">
+                                <div class="weather-extra-info-item">
+                                    <span id="weather_sunset_sunrise_img" class="fal fa-sunset"></span>
+                                    <div id="weather_sunset_sunrise_time">-:--am</div>
+                                </div>
+                                <div class="weather-extra-info-item">
+                                    <span class="fal fa-wind"></span>
+                                    <div id="wind"></div>
+                                </div>
+                                <div class="weather-extra-info-item">
+                                    <span class="fal fa-humidity"></span>
+                                    <div id="humidity"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- weather-parent -->
+
+            <!-- weather-alert- Not used need new placement -->
+            <div id="weather-alert" class="translucent-alert weather-alert hide" style="display: none;">
+                <div class="weather-alert-inside">
+                    <div class="pull-left big">
+                        <span id="weather-alert-icon" class="wi"></span>
+                    </div>
+                    <div>
+                        <div id="weather-alert-expires" class="xsmall font-light pull-right">7:00</div>
+                        <div id="weather-alert-description" class="small font-light">description</div>
+                        <div id="weather-alert-message" class="xxsmall">small message</div>
+                    </div>
+                </div>
+            </div>
+            <!-- /weather-alert- Not used need new placement -->
+
+            <div id="clock" class="clock clock-container bright">
+                <div class="time large">
+                    --:-- <span class="sec">--</span>
+                    <span class="time-ampm">PM</span>
+                </div>
+            </div>
+            <div id="clock_date" class="fade bright date-container">
+                <div class="date">
+                    <div class="day-of-week">--</div>
+                    <div class="month">- --</div>
+                </div>
+            </div>
+        </header>
+        <div id="calendar" class="events"></div><!-- /calendar-scrollable-container -->
+        <div id="progress"></div> <!-- not used trying to get it to work -->
+    </div>
+    <div id="content" class="abs-zero">
+        <div id="background-photo_underlay" class="abs-zero" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 750px;
+            background: url(&quot;{{ url_for('static', filename='img/photo_default.jpg') }}&quot;)
+                center top / contain no-repeat;
+            z-index: 10;
+            background-color: rgb(0, 0, 0);">
+        </div>
+    </div>
+
+<script>
+(function(global, $, window, document) {
+    "use strict";
+
+    // PhotoLoader Class with Fade-in Effect
+    class PhotoLoader {
+        constructor(config, mPanel) {
+            this.settings = Object.assign({
+                photoEndpoint: '{{ configuration['photo_route'] }}',
+                refreshInterval: {{ configuration['photo_refresh_interval'] }}, // Refresh every 2 minute
+                photoElement: '#photo', // Selector for the element to update
+                useBackground: false, // Set this to true to update background instead of src
+                fadeDuration: {{ configuration['photo_fade_duration'] }} // Duration of the fade-in effect in milliseconds
+            }, config);
+
+            this.photoElement = $(this.settings.photoElement);
+            this.mPanel = mPanel;
+
+            if (!this.photoElement.length) {
+                console.error("Photo element not found:", this.settings.photoElement);
+                this.mPanel.slideBanner('in', `Photo element not found: ${this.settings.photoElement}`);
+                setTimeout(() => this.mPanel.slideBanner('out'), 7000);
+                return;
+            }
+
+            this.init();
+        }
+
+        init() {
+            this.loadPhoto();
+            this.schedulePhotoReload();
+        }
+
+        loadPhoto() {
+            $.getJSON(this.settings.photoEndpoint, (data) => {
+                if (data.photo_url) {
+                    if (this.settings.useBackground) {
+                        // Update the background property with fade-in
+                        const newBackground = `url('${data.photo_url}') center top / contain no-repeat`;
+
+                        // Temporarily create a new element to handle the fade-in
+                        const tempElement = $('<div></div>')
+                            .css({
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                background: newBackground,
+                                zIndex: -1,
+                                opacity: 0,
+                                transition: `opacity ${this.settings.fadeDuration}ms ease-in-out`
+                            })
+                            .appendTo(this.photoElement.parent());
+
+                        // Fade in the new background and remove the old one
+                        setTimeout(() => {
+                            tempElement.css('opacity', 1);
+                            setTimeout(() => {
+                                this.photoElement.css('background', newBackground);
+                                tempElement.remove();
+                            }, this.settings.fadeDuration);
+                        }, 0);
+                    } else {
+                        // Update the src attribute of an image tag with fade-in
+                        this.photoElement.fadeOut(this.settings.fadeDuration, () => {
+                            this.photoElement.attr('src', data.photo_url).fadeIn(this.settings.fadeDuration);
+                        });
+                    }
+                } else {
+                    console.error("No photo URL received from server.");
+                    this.mPanel.slideBanner('in', 'No photo URL received from server.');
+                    setTimeout(() => this.mPanel.slideBanner('out'), 7000);
+                }
+            }).fail(() => {
+                console.error("Failed to fetch photo URL.");
+                this.mPanel.slideBanner('in', 'Failed to fetch photo URL.');
+                setTimeout(() => this.mPanel.slideBanner('out'), 7000);
+            });
+        }
+
+        schedulePhotoReload() {
+            setInterval(() => this.loadPhoto(), this.settings.refreshInterval);
+        }
+    }
+
+    // MPanel Class (Unchanged)
+    class MPanel {
+        constructor(config) {
+            this.settings = Object.assign({
+                timeFormat: {{ configuration['timeFormat'] }},
+                dateFormat: '{{ configuration['dateFormat'] }}',
+                clockType: '{{ configuration['clockType'] }}',
+                timezone: '{{ configuration['timezone'] }}',
+                showSeconds: {{ configuration['showSeconds'] }},
+                showAmpm: {{ configuration['showAmpm'] }},
+            }, config);
+
+            this.dom = {};
+            this.init();
+        }
+
+        init() {
+            this.cacheDomElements();
+            this.updateAll(); // Update all data at once
+            this.scheduleUpdates(); // Setup periodic updates
+        }
+
+        cacheDomElements() {
+            this.dom = {
+                clock: $(".clock .time"),
+                date: $(".date"),
+                hour: $("#hour"),
+                minute: $("#minute"),
+                second: $("#second"),
+                calendar: $("#calendar"),
+                weather: {
+                    temp: $("#temperature"),
+                    icon: $("#weather-current-icon"),
+                    feelsLike: $("#feelslike"),
+                    wind: $("#wind"),
+                    humidity: $("#humidity"),
+                    sunsetSunriseTime: $("#weather_sunset_sunrise_time"),
+                    sunsetSunriseIcon: $("#weather_sunset_sunrise_img"),
+                },
+                eventsLoading: $("#events-loading"),
+                offlineBanner: document.getElementById('network-offline'),
+            };
+            console.log("DOM elements cached:", this.dom);
+        }
+
+        updateAll() {
+            this.updateTime();
+            this.updateWeather();
+            this.updateAstronomy();
+            this.updateEvents();
+        }
+
+        scheduleUpdates() {
+            setInterval(() => this.updateTime(), {{ configuration['time_refresh'] }});
+            setInterval(() => this.updateWeather(), {{ configuration['weather_refresh'] }});
+            setInterval(() => this.updateAstronomy(), {{ configuration['astronomy_refresh'] }});
+            setInterval(() => this.updateEvents(), {{ configuration['event_refresh'] }});
+        }
+
+        updateTime() {
+            if (!this.dom.clock || !this.dom.date) {
+                console.error("Clock or Date DOM elements are not initialized.");
+                return;
+            }
+
+            const currentTime = moment().tz(this.settings.timezone);
+
+            if (this.settings.clockType === "analog") {
+                this.updateAnalogClock(currentTime);
+            } else {
+                this.updateDigitalClock(currentTime);
+            }
+
+            this.updateDate(currentTime);
+        }
+
+        updateAnalogClock(currentTime) {
+            const secondsRotation = 6 * currentTime.seconds();
+            const minutesRotation = 6 * currentTime.minutes() + secondsRotation / 60;
+            const hoursRotation = ((currentTime.hours() % 12) / 12) * 360 + 90 + minutesRotation / 12;
+
+            this.dom.hour.css("transform", `rotate(${hoursRotation}deg)`);
+            this.dom.minute.css("transform", `rotate(${minutesRotation}deg)`);
+            this.dom.second.css("transform", `rotate(${secondsRotation}deg)`);
+        }
+
+        updateDigitalClock(currentTime) {
+            const timeFormat = this.settings.timeFormat === 12 ? "h:mm" : "HH:mm";
+            const timeString = `${currentTime.format(timeFormat)}
+                ${this.settings.showSeconds ? `<span class="sec">${currentTime.format("ss")}</span>` : ""}
+                ${this.settings.showAmpm ? `<span class="time-ampm">${currentTime.format("A")}</span>` : ""}`;
+
+            this.dom.clock.html(timeString);
+        }
+
+        updateDate(currentTime) {
+            const dateFormats = {
+                "D MMMM": `<div class="day-of-week">${currentTime.format("dddd,")}</div><div class="month">${currentTime.format("D MMMM")}</div>`,
+                "dddd D. MMMM": `<div class="day-of-week">${currentTime.format("dddd D. MMMM")}</div>`,
+                default: `<div class="day-of-week">${currentTime.format("dddd,")}</div><div class="month">${currentTime.format("MMMM D")}</div>`,
+            };
+            this.dom.date.html(dateFormats[this.settings.dateFormat] || dateFormats.default);
+        }
+
+        fetchData(url, successCallback, errorCallback) {
+            $.getJSON(url, successCallback).fail(errorCallback);
+        }
+
+        updateWeather() {
+            this.fetchData(
+                '{{ configuration['weather_route'] }}',
+                (data) => {
+                    const weather = this.dom.weather;
+                    weather.temp.text(Math.round(data.temp_f));
+                    weather.icon.attr("class", `weather-current-icon fal ${data.condition.fa_icon}`).attr("title", data.condition.text);
+                    weather.feelsLike.text(`${Math.round(data.feelslike_f)}°`);
+                    weather.wind.text(`${data.wind_mph} mph ${data.wind_dir}`);
+                    weather.humidity.text(`${data.humidity}%`);
+                },
+                () => console.error('Error fetching weather data.')
+            );
+        }
+
+        updateAstronomy() {
+            this.fetchData(
+                '{{ configuration['astronomy_route'] }}',
+                (data) => {
+                    const isSunUp = data.is_sun_up;
+                    this.dom.weather.sunsetSunriseTime.text(isSunUp ? data.sunset : data.sunrise);
+                    this.dom.weather.sunsetSunriseIcon.attr("class", isSunUp ? "fal fa-sunset" : "fal fa-sunrise");
+                },
+                () => console.error('Error fetching astronomy data.')
+            );
+        }
+
+        updateEvents() {
+            this.dom.eventsLoading.show();
+            this.dom.calendar.load('{{ configuration['event_route'] }}', () => {
+                $(window).trigger("resize");
+                this.dom.eventsLoading.hide();
+            });
+        }
+
+        slideBanner(action, message = null) {
+            const offlineBanner = this.dom.offlineBanner;
+            const errorMessageElement = document.getElementById('dak-error-message');
+
+            if (!offlineBanner) {
+                console.error("Offline banner element is not initialized.");
+                return;
+            }
+
+            if (message) {
+                errorMessageElement.innerHTML = message;
+            }
+
+            if (action === 'in') {
+                offlineBanner.classList.remove('slideOutRight');
+                offlineBanner.classList.add('slideInLeft');
+                offlineBanner.style.display = 'block'; // Ensure it's visible
+            } else if (action === 'out') {
+                offlineBanner.classList.remove('slideInLeft');
+                offlineBanner.classList.add('slideOutRight');
+
+                offlineBanner.addEventListener('animationend', () => {
+                    offlineBanner.style.display = 'none';
+                }, { once: true });
+            }
+        }
+    }
+
+    // Initialize PhotoLoader and MPanel
+    $(function() {
+
+        const mPanel = new MPanel({
+            timeFormat: {{ configuration['timeFormat'] }},
+            dateFormat: "{{ configuration['dateFormat'] }}",
+            clockType: "{{ configuration['clockType'] }}",
+            timezone: "{{ configuration['timezone'] }}",
+            showSeconds: {{ configuration['showSeconds'] }},
+            showAmpm: {{ configuration['showAmpm'] }},
+        });
+
+        new PhotoLoader({
+            photoElement: '#background-photo_underlay', // Target the background element
+            refreshInterval: {{ configuration['photo_refresh_interval'] }}, // Refresh every 5 seconds
+            useBackground: true, // Indicate that we're updating the background
+            fadeDuration: {{ configuration['photo_fade_duration'] }} // Duration of the fade-in effect in milliseconds
+        }, mPanel);
+
+        // Example: Trigger a network error notification
+        {#setTimeout(() => mPanel.slideBanner('in', 'Network connection lost. Please check your connectivity!'), 2000);#}
+        {#setTimeout(() => mPanel.slideBanner('out'), 7000);#}
+
+    });
+
+})(this, jQuery, window, document);
+</script>
+
+
+</body>
+</html>

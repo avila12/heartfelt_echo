@@ -1,0 +1,55 @@
+<div class="legend">
+    <span style="color: #c40d0d; font-size: 35px;">EVENT CALENDAR</span>
+</div>
+<div style="overflow:hidden">
+    <div class="calendar-scrollable-container">
+        <div class="calendar-agenda">
+          {% for date, events in grouped_events.items() %}
+              <div class="day-container">
+                  <div class="agenda-day-header">
+                    <span class="agenda-day-header-num">
+                        {{ events[0].day }}</span> &nbsp; {{ events[0].weekday }}
+                      {% if date == today_date %}
+                          <span style="color:#FF0000;">Today</span>
+                      {% elif date == tomorrow_date %}
+                          <span style="color:#FF0000;">Tomorrow</span>
+                      {% endif %}
+
+                      {% if events[0].forcast_data %}
+                      <div class="day-forecast">
+                        <span class="weather-icon fa-fw fas {{ events[0].forcast_data.fa_icon }}"></span>&nbsp;
+                          &nbsp;<strong style="color: #c40d0d">Hi:</strong>
+                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forcast_data.maxtemp_f }}°</span>
+                          <strong style="color: #c40d0d">Lo:</strong>
+                          <span class="forecast-low" style="padding-left: 0">{{ events[0].forcast_data.mintemp_f }}°</span>
+                          &nbsp;<span class="fal fa-cloud-rain"></span>
+                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forcast_data.daily_chance_of_rain }}%</span>
+                      </div>
+                      {% endif %}
+                  </div>
+                  <ul>
+                    {% for event in events %}
+                        {# optinal class for back ground (white has-event-background) #}
+                        <li class="#039be5" style="border-left-color:#039be5;">
+                            <div class="agenda-event-time">
+                              {% if event.is_all_day %}
+                                  <div class="agenda-event-time-start">All day</div>
+                              {% else %}
+                                  <div class="agenda-event-time-start">{{ event.start_time }}</div>
+                                  <div class="agenda-event-time-end">{{ event.end_time }}</div>
+                              {% endif %}
+                            </div>
+                            <div class="agenda-event-details">
+                                <div class="agenda-event-summary">{{ event.summary }}</div>
+                                <div class="agenda-event-location"></div>
+                            </div>
+                            <div style="clear: both; height: 0;"></div>
+                        </li>
+                    {% endfor %}
+                  </ul>
+              </div>
+          {% endfor %}
+        </div>  <!-- /calendar-agenda -->
+    </div>
+    <!-- /calendar-scrollable-container -->
+</div>
