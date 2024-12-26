@@ -1,4 +1,4 @@
-# Dementia Awareness and Support Platform
+# Dementia Daily Support Platform
 
 ## Overview
 
