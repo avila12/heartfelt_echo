@@ -4,19 +4,12 @@
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y chromium-browser python3 python3-pip unclutter xdotool
 
+python3 -m venv venv
+
+source venv/bin/activate
+
 # Install Gunicorn for running the Flask app
 pip3 install gunicorn
-
-# Clone or pull the latest version of the repository
-APP_DIR="$HOME/heartfelt_echo"
-if [ ! -d "$APP_DIR" ]; then
-  git clone https://github.com/avila12/heartfelt_echo.git "$APP_DIR"
-else
-  cd "$APP_DIR" && git pull
-fi
-
-# Navigate to the app directory
-cd "$APP_DIR"
 
 # Install Python dependencies
 if [ -f "requirements.txt" ]; then
