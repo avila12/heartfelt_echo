@@ -40,6 +40,8 @@ Ensure you have the following installed:
 3. Install dependencies:
     ```bash
     pip install -r requirements.txt
+    chmod +x install.sh
+    ./install.sh
     ```
 
 4. Run the application:

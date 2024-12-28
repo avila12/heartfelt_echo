@@ -2,7 +2,7 @@
 
 # Update and install system dependencies
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y chromium-browser python3 python3-pip python3-venv unclutter xdotool nginx
+sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx
 
 # Variables
 APP_DIR="$HOME/heartfelt_echo"
@@ -81,21 +81,4 @@ sudo ln -sf $NGINX_CONF /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 
-# Create an autostart entry for kiosk mode
-AUTOSTART_DIR="$HOME/.config/autostart"
-mkdir -p "$AUTOSTART_DIR"
-
-cat <<EOF > "$AUTOSTART_DIR/heartfelt_echo.desktop"
-[Desktop Entry]
-Type=Application
-Exec=/bin/bash -c 'chromium-browser --kiosk --noerrdialogs --disable-infobars --disable-translate http://localhost'
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true
-Name=Heartfelt Echo Kiosk
-EOF
-
-# Add unclutter to hide mouse cursor
-echo "@unclutter -idle 0.5" >> "$HOME/.xinitrc"
-
-echo "Installation complete. Reboot your Raspberry Pi to apply the changes."
+echo "Installation complete. The kiosk mode has been removed. You can manually open Chromium and navigate to http://localhost if desired."
