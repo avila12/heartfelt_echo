@@ -106,31 +106,28 @@ def forcast():
         zipcode=zipcode, days=app.config.get("forcast_days", 3), cache_duration=app.config.get("forcast_cache_duration", 900), file_type=file
     )
 
-
 @app.route("/app/photo")
 def get_photo_path():
     try:
         photo_path = photo_cycler.get_next_photo()
-        # Create a URL path to serve the photo dynamically
+        # Generate URL pointing to the /photos/ path served by Nginx
         return jsonify(
             {
-                "photo_url": url_for(
-                    "serve_photo", filename=os.path.basename(photo_path), _external=True
-                )
+                "photo_url": f"/photos/{os.path.basename(photo_path)}"
             }
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/serve-photo/<filename>")
+# Optional: Keep this route for development when Nginx is not used
+@app.route("/serve-photos")
 def serve_photo(filename):
     try:
         # Locate the photo in today's directory or default list
         all_photos = photo_cycler.photos
         for photo in all_photos:
-            if os.path.basename(photo) == filename:
-                return send_file(photo)
+            return send_file(photo)
         return jsonify({"error": "File not found."}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
