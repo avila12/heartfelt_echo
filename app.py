@@ -117,7 +117,7 @@ def get_photo_path():
         # Generate URL pointing to the /photos/ path served by Nginx
         return jsonify(
             {
-                "photo_url": f"/photos/{os.path.basename(photo_path)}"
+                "photo_url": f"/photos/default/{os.path.basename(photo_path)}"
             }
         )
     except Exception as e:
