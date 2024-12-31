@@ -17,12 +17,8 @@ app = Flask(__name__)
 
 zipcode = os.getenv('zipcode', '33615')
 
+
 @app.route("/")
-def hello():
-    return "<h1 style='color:blue'>Hello There!</h1>"
-
-
-@app.route("/test")
 def index():
     configuration = {
         # base routes
