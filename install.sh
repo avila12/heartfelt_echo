@@ -6,6 +6,9 @@ handle_error() {
   exit 1
 }
 
+# Get the Raspberry Pi's hostname
+HOSTNAME=$(hostname)
+
 # Update and install system dependencies
 echo "Updating system and installing dependencies..."
 sudo apt update && sudo apt upgrade -y || handle_error "Failed to update and upgrade packages"
@@ -80,7 +83,7 @@ echo "Configuring Nginx..."
 sudo bash -c 'cat <<EOF > '"$NGINX_CONF"'
 server {
     listen 80;
-    server_name 10.0.0.161;
+    server_name '"$HOSTNAME"'.local;
 
     # Handle static files
     location /static/ {
@@ -114,5 +117,21 @@ sudo ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/
 sudo nginx -t || handle_error "Nginx configuration test failed"
 sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
 
+# Configure kiosk mode for Chromium
+echo "Configuring Chromium in kiosk mode..."
+mkdir -p ~/.config/autostart
+cat <<EOF > "$KIOSK_DESKTOP"
+[Desktop Entry]
+Type=Application
+Name=Heartfelt Echo Kiosk
+Exec=chromium-browser --noerrdialogs --kiosk http://$HOSTNAME.local --start-fullscreen
+X-GNOME-Autostart-enabled=true
+EOF
+
+# Set the screen orientation to portrait
+echo "Setting screen orientation to portrait mode..."
+echo "display_lcd_rotate=1" | sudo tee -a /boot/config.txt
+
 # Final message
-echo "Installation complete. Access your application via the configured server IP or localhost."
+echo "Installation complete. Rebooting now..."
+sudo reboot
