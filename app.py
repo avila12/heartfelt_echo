@@ -1,4 +1,5 @@
 import os
+import time
 from flask import Flask, render_template, jsonify, request, send_file, url_for
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -21,8 +22,6 @@ zipcode = os.getenv('zipcode', '33615')
 @app.route("/")
 def index():
     configuration = {
-        # base routes
-        "route": os.getenv('route', "/app"),
 
         # time
         "timeFormat": int(os.getenv("timeFormat", 12)),
@@ -132,6 +131,16 @@ def serve_photo(filename):
         return jsonify({"error": "File not found."}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/sleep")
+def serve_photo(filename):
+    os.system("xset dpms force off")  # Turn off the screen
+    return jsonify({"sleep": True}), 200
+
+@app.route("/wake")
+def serve_photo(filename):
+    os.system("xset dpms force on")  # Turn on the screen
+    return jsonify({"sleep": False}), 200
 
 
 if __name__ == "__main__":
