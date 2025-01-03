@@ -13,7 +13,6 @@ HOSTNAME=$(hostname)
 echo "Updating system and installing dependencies..."
 sudo apt update && sudo apt upgrade -y || handle_error "Failed to update and upgrade packages"
 sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avahi-daemon || handle_error "Failed to install required packages"
-sudo apt install chromium -y
 sudo apt autoremove
 
 # Variables
@@ -35,8 +34,10 @@ source venv/bin/activate || handle_error "Failed to activate virtual environment
 # Install Python dependencies
 echo "Installing Python dependencies..."
 pip install --upgrade pip || handle_error "Failed to upgrade pip"
-if [ -f "requirements.txt" ]; then
-  pip install -r requirements.txt || handle_error "Failed to install dependencies from requirements.txt"
+if [ -f "$APP_DIR/requirements.txt" ]; then
+  pip install -r "$APP_DIR/requirements.txt" || handle_error "Failed to install dependencies from requirements.txt"
+else
+  echo "No requirements.txt found, skipping installation of Python dependencies."
 fi
 
 # Set permissions
@@ -118,17 +119,20 @@ sudo rm /etc/nginx/sites-enabled/default
 sudo ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/
 sudo nginx -t || handle_error "Nginx configuration test failed"
 sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
+sudo systemctl status nginx || handle_error "Nginx service failed to start"
 
 # Configure kiosk mode for Chromium with dynamic hostname
 echo "Configuring Chromium in kiosk mode..."
 sudo chown -R pi:pi ~/.config
 mkdir -p ~/.config/autostart
+
 cat <<EOF > "$KIOSK_DESKTOP"
-echo "[Desktop Entry]
+[Desktop Entry]
 Type=Application
 Name=Heartfelt Echo Kiosk
 Exec=chromium-browser --noerrdialogs --kiosk http://$HOSTNAME.local --start-fullscreen
-X-GNOME-Autostart-enabled=true" > "$KIOSK_DESKTOP"
+X-GNOME-Autostart-enabled=true
+EOF
 
 # Set the screen orientation to portrait
 echo "Setting screen orientation to portrait mode..."
