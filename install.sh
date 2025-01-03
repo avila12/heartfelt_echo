@@ -21,6 +21,7 @@ STATIC_DIR="$APP_DIR/static"
 PHOTOS_DIR="$APP_DIR/photos"
 SERVICE_FILE="/etc/systemd/system/heartfelt_echo.service"
 NGINX_CONF="/etc/nginx/sites-available/heartfelt_echo"
+KIOSK_DESKTOP="$HOME/.config/autostart/heartfelt_echo_kiosk.desktop"
 
 # Ensure the application directory exists
 cd "$APP_DIR" || handle_error "Failed to access project directory: $APP_DIR"
@@ -78,7 +79,7 @@ sudo systemctl daemon-reload || handle_error "Failed to reload systemd"
 sudo systemctl enable heartfelt_echo || handle_error "Failed to enable Gunicorn service"
 sudo systemctl start heartfelt_echo || handle_error "Failed to start Gunicorn service"
 
-# Configure Nginx
+# Configure Nginx with dynamic hostname
 echo "Configuring Nginx..."
 sudo bash -c 'cat <<EOF > '"$NGINX_CONF"'
 server {
@@ -117,7 +118,7 @@ sudo ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/
 sudo nginx -t || handle_error "Nginx configuration test failed"
 sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
 
-# Configure kiosk mode for Chromium
+# Configure kiosk mode for Chromium with dynamic hostname
 echo "Configuring Chromium in kiosk mode..."
 mkdir -p ~/.config/autostart
 cat <<EOF > "$KIOSK_DESKTOP"
