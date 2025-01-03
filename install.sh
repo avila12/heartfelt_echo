@@ -121,6 +121,7 @@ sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
 
 # Configure kiosk mode for Chromium with dynamic hostname
 echo "Configuring Chromium in kiosk mode..."
+sudo chown -R pi:pi ~/.config
 mkdir -p ~/.config/autostart
 cat <<EOF > "$KIOSK_DESKTOP"
 echo "[Desktop Entry]
