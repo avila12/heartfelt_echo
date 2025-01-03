@@ -134,9 +134,9 @@ Exec=chromium-browser --noerrdialogs --kiosk http://$HOSTNAME.local --start-full
 X-GNOME-Autostart-enabled=true
 EOF
 
-# Set the screen orientation to portrait
-echo "Setting screen orientation to portrait mode..."
-sudo sh -c 'echo "display_lcd_rotate=1" >> /boot/config.txt'
+# Set the screen orientation to landscape
+#echo "Setting screen orientation to landscape mode..."
+#sudo sh -c 'echo "display_lcd_rotate=1" >> /boot/config.txt'
 
 # Final message
 echo "Installation complete. Rebooting now..."
