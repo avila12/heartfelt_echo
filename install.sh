@@ -122,16 +122,15 @@ sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
 echo "Configuring Chromium in kiosk mode..."
 mkdir -p ~/.config/autostart
 cat <<EOF > "$KIOSK_DESKTOP"
-[Desktop Entry]
+echo "[Desktop Entry]
 Type=Application
 Name=Heartfelt Echo Kiosk
 Exec=chromium-browser --noerrdialogs --kiosk http://$HOSTNAME.local --start-fullscreen
-X-GNOME-Autostart-enabled=true
-EOF
+X-GNOME-Autostart-enabled=true" > "$KIOSK_DESKTOP"
 
 # Set the screen orientation to portrait
 echo "Setting screen orientation to portrait mode..."
-echo "display_lcd_rotate=1" | sudo tee -a /boot/config.txt
+sudo sh -c 'echo "display_lcd_rotate=1" >> /boot/config.txt'
 
 # Final message
 echo "Installation complete. Rebooting now..."
