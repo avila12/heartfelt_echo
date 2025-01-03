@@ -133,12 +133,12 @@ def serve_photo(filename):
         return jsonify({"error": str(e)}), 500
 
 @app.route("/sleep")
-def screen_sleep(filename):
+def screen_sleep():
     os.system("xset dpms force off")  # Turn off the screen
     return jsonify({"sleep": True}), 200
 
 @app.route("/wake")
-def screen_wake(filename):
+def screen_wake():
     os.system("xset dpms force on")  # Turn on the screen
     return jsonify({"sleep": False}), 200
 
