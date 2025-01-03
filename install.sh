@@ -10,6 +10,7 @@ handle_error() {
 echo "Updating system and installing dependencies..."
 sudo apt update && sudo apt upgrade -y || handle_error "Failed to update and upgrade packages"
 sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avahi-daemon || handle_error "Failed to install required packages"
+sudo apt autoremove
 
 # Variables
 APP_DIR="$HOME/heartfelt_echo"
@@ -76,20 +77,20 @@ sudo systemctl start heartfelt_echo || handle_error "Failed to start Gunicorn se
 
 # Configure Nginx
 echo "Configuring Nginx..."
-sudo bash -c "cat <<EOF > $NGINX_CONF
+sudo bash -c 'cat <<EOF > '"$NGINX_CONF"'
 server {
     listen 80;
     server_name 10.0.0.161;
 
     # Handle static files
     location /static/ {
-        alias $STATIC_DIR/;
+        alias '"$STATIC_DIR"'/;
         autoindex on; # Optional for debugging, can be removed in production
     }
 
     # Handle photo files
     location /photos/ {
-        alias $PHOTOS_DIR/; # Use alias for consistency
+        alias '"$PHOTOS_DIR"'/; # Use alias for consistency
         autoindex on; # Optional for debugging, can be removed in production
     }
 
@@ -105,7 +106,7 @@ server {
         root /usr/share/nginx/html;
     }
 }
-EOF"
+EOF'
 
 # Remove default Nginx configuration and enable new configuration
 sudo rm /etc/nginx/sites-enabled/default
