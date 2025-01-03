@@ -67,11 +67,10 @@ def events():
     three_day_forecast = get_forecast_cached_data(
         zipcode=zipcode, forecast_file="forecast"
     )
+
     event_url = os.getenv("event_url")
     event_holiday_url = os.getenv("event_holiday_url")
-    if not event_url:
-        return ""
-    if not event_holiday_url:
+    if not event_url or not event_holiday_url:
         return ""
 
     grouped_events = get_google_calendar_data(url=event_url, holiday_url=event_holiday_url, days=7, forcast=three_day_forecast)
@@ -102,7 +101,7 @@ def astronomy():
 def forcast():
     file = request.args.get("file", "current")
     return get_forecast_data_or_cached(
-        zipcode=zipcode, days=app.config.get("forcast_days", 3), cache_duration=app.config.get("forcast_cache_duration", 900), file_type=file
+        zipcode=zipcode, days=int(os.getenv("forcast_days", 3)), cache_duration=int(os.getenv("forcast_cache_duration", 900)), file_type=file
     )
 
 @app.route("/app/photo")
