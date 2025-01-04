@@ -150,6 +150,14 @@ def set_monitor_state_on():
     set_monitor_state("on_rotate_left")  # Turn on the screen
     return jsonify({"state": "on"}), 200
 
+@app.route('/show-jobs')
+def show_jobs():
+    jobs = scheduler.get_jobs()
+    jobs_list = []
+    for job in jobs:
+        jobs_list.append(str(job))
+    return jsonify({"scheduled_jobs": jobs_list}), 200
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
