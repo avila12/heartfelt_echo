@@ -132,7 +132,7 @@ def serve_photo(filename):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# set_monitor_state("off")
+set_monitor_state("off")
 # Scheduler setup to turn on/off monitor
 # scheduler = BackgroundScheduler()
 # scheduler.add_job(set_monitor_state("off"), 'cron', hour=22, minute=0)  # Turn off at 10:00 PM
