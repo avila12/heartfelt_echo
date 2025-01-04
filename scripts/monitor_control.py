@@ -1,8 +1,6 @@
 import os
 import subprocess
 
-os.environ["DISPLAY"] = ":0"
-
 def set_monitor_state(state):
     """
     Controls the monitor state using xrandr.

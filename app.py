@@ -14,6 +14,7 @@ from scripts.weatherapi import (
 )
 
 load_dotenv()
+os.environ["DISPLAY"] = ":0"
 
 app = Flask(__name__)
 
