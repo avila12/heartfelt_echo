@@ -146,6 +146,9 @@ echo "ExecStart=-/sbin/agetty --noclear --autologin pi %I \$TERM" | sudo tee -a 
 # Configure the X server to start Chromium in kiosk mode
 echo "Creating .xinitrc file to start Chromium in kiosk mode..."
 echo "#!/bin/bash" > /home/pi/.xinitrc
+echo "xset s off" > /home/pi/.xinitrc
+echo "xset -dpms" > /home/pi/.xinitrc
+echo "xset s noblank" > /home/pi/.xinitrc
 echo "xrandr --output HDMI-1 --rotate left" >> /home/pi/.xinitrc  # Rotate screen to portrait
 echo "chromium-browser --noerrdialogs --kiosk http://$HOSTNAME.local --incognito --disable-translate --start-fullscreen" >> /home/pi/.xinitrc
 
@@ -166,6 +169,7 @@ echo "Disabling LightDM (GUI) to prevent desktop environment..."
 echo "Disabling screen blanking and power management..."
 echo "xset s off" | sudo tee -a /etc/xdg/openbox/autostart
 echo "xset -dpms" | sudo tee -a /etc/xdg/openbox/autostart
+echo "xset s noblank" | sudo tee -a /etc/xdg/openbox/autostart
 
 # Optional: Hide the mouse cursor
 echo "Hiding the mouse cursor after idle..."
