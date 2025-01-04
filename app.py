@@ -133,12 +133,13 @@ def serve_photo(filename):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-from functools import partial
+import atexit
 # Scheduler setup to turn on/off monitor
 scheduler = BackgroundScheduler()
-scheduler.add_job(partial(set_monitor_state, "off"), 'cron', hour=18, minute=50)  # Turn off at 10:00 PM
-scheduler.add_job(partial(set_monitor_state, "on_rotate_left"), 'cron', hour=8, minute=00)   # Turn on at 7:00 AM
+scheduler.add_job(set_monitor_state, 'cron', hour=19, minute=3, args=["off"])  # Turn off at 10:00 PM
+scheduler.add_job(set_monitor_state, 'cron', hour=8, minute=0, args=["on_rotate_left"])   # Turn on at 7:00 AM
 scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
 
 @app.route("/set-monitor-state-off")
 def set_monitor_state_off():
