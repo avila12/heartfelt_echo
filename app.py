@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, jsonify, request, send_file
+from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
@@ -130,6 +131,13 @@ def serve_photo(filename):
         return jsonify({"error": "File not found."}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# Scheduler setup to turn on/off monitor
+scheduler = BackgroundScheduler()
+scheduler.add_job(set_monitor_state("off"), 'cron', hour=22, minute=0)  # Turn off at 10:00 PM
+scheduler.add_job(set_monitor_state("on_rotate_left"), 'cron', hour=7, minute=0)    # Turn on at 7:00 AM
+scheduler.start()
 
 @app.route("/set-monitor-state-off")
 def set_monitor_state_off():

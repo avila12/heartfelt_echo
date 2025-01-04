@@ -3,4 +3,5 @@ python-dotenv
 requests
 ics
 gunicorn
+apscheduler
 
