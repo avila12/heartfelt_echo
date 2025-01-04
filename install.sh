@@ -12,7 +12,7 @@ HOSTNAME=$(hostname)
 # Update and install system dependencies
 echo "Updating system and installing dependencies..."
 sudo apt update && sudo apt upgrade -y || handle_error "Failed to update and upgrade packages"
-sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avahi-daemon x11-xserver-utils || handle_error "Failed to install required packages"
+sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avahi-daemon x11-xserver-utils python3-rpi.gpio|| handle_error "Failed to install required packages"
 sudo apt autoremove
 
 # Variables

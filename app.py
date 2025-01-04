@@ -1,12 +1,12 @@
 import os
-import time
-from flask import Flask, render_template, jsonify, request, send_file, url_for
+from flask import Flask, render_template, jsonify, request, send_file
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
-from google_calendar import get_google_calendar_data
-from photo import photo_cycler
-from weatherapi import (
+from scripts.google_calendar import get_google_calendar_data
+from scripts.photo import photo_cycler
+from scripts.monitor_control import set_monitor_state
+from scripts.weatherapi import (
     get_forecast_data_or_cached,
     get_forecast_cached_data,
     fontawesome_icon,
@@ -131,15 +131,15 @@ def serve_photo(filename):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/sleep")
-def screen_sleep():
-    os.system("xset dpms force off")  # Turn off the screen
-    return jsonify({"sleep": True}), 200
+@app.route("/set-monitor-state-off")
+def set_monitor_state_off():
+    set_monitor_state("off")  # Turn off the screen
+    return jsonify({"state": "off"}), 200
 
-@app.route("/wake")
-def screen_wake():
-    os.system("xset dpms force on")  # Turn on the screen
-    return jsonify({"sleep": False}), 200
+@app.route("/set-monitor-state-on")
+def set_monitor_state_on():
+    set_monitor_state("on_rotate_left")  # Turn on the screen
+    return jsonify({"state": "on"}), 200
 
 
 if __name__ == "__main__":
