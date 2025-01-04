@@ -19,38 +19,41 @@ This Flask-based web application tools to aid those affected by dementia.
 ## Installation
 
 ### Prerequisites
+Hardware:
+- Raspberry Pi OS 4 +
+
+OS
+- Raspberry Pi OS Lite
+
 Ensure you have the following installed:
 - Python 3.7+
 - Flask 2.0+
-- Virtualenv (optional, but recommended)
+- Virtualenv
 
 ### Steps
+1. OS Setup:
+    ```bash
+    root user pi
+    device name heartfeltecho
+    ```
+   
 1. Clone the repository:
     ```bash
     git clone https://github.com/avila12/heartfelt_echo
     cd heartfelt_echo
     ```
 
-2. Create a virtual environment (optional but recommended):
+2. Create .env file:
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    sudo nanao .env
     ```
 
 3. Install dependencies:
     ```bash
-    pip install -r requirements.txt
     chmod +x install.sh
-    ./install.sh
+    ./setup_kiosk.sh
     ```
 
-4. Run the application:
-    ```bash
-    flask run
-    ```
-    By default, the app will be available at [http://127.0.0.1:5000](http://127.0.0.1:5000).
-
----
 
 ## Folder Structure
 
