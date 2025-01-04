@@ -136,8 +136,8 @@ def serve_photo(filename):
 
 # Scheduler setup to turn on/off monitor
 scheduler = BackgroundScheduler()
-# scheduler.add_job(set_monitor_state("off"), 'cron', hour=22, minute=0)  # Turn off at 10:00 PM
-scheduler.add_job(set_monitor_state("on_rotate_left"), 'cron', hour=17, minute=15)    # Turn on at 7:00 AM
+scheduler.add_job(lambda: set_monitor_state("off"), 'cron', hour=22, minute=0)  # Turn off at 10:00 PM
+scheduler.add_job(lambda: set_monitor_state("on_rotate_left"), 'cron', hour=17, minute=15)   # Turn on at 7:00 AM
 scheduler.start()
 
 @app.route("/set-monitor-state-off")
