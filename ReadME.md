@@ -37,13 +37,13 @@ Ensure you have the following installed:
     device name heartfeltecho
     ```
    
-1. Clone the repository:
+2. Clone the repository:
     ```bash
     git clone https://github.com/avila12/heartfelt_echo
     cd heartfelt_echo
     ```
 
-2. Create .env file:
+3. Create .env file and Configuration:
     ```bash
     sudo nanao .env
     ```
@@ -71,7 +71,7 @@ Ensure you have the following installed:
 ---
 
 ## Configuration
-- Modify `config.py` for environment-specific settings.
+- Modify `.env` for environment-specific settings.
 - Set up environment variables for sensitive data such as API keys and database URIs:
 
 ---
