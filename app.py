@@ -159,6 +159,11 @@ def show_jobs():
         jobs_list.append(str(job))
     return jsonify({"scheduled_jobs": jobs_list}), 200
 
+@app.route('/debug-jobs')
+def debug_jobs():
+    jobs = scheduler.get_jobs()
+    return jsonify({"scheduled_jobs": [job.__str__() for job in jobs]}), 200
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
