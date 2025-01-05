@@ -19,6 +19,10 @@ This Flask-based web application tools to aid those affected by dementia.
 ## Installation
 
 ### Prerequisites
+Weather api:
+- https://rapidapi.com
+- https://rapidapi.com/weatherapi/api/weatherapi-com/playground/apiendpoint_45d0557e-e911-4a71-b6ff-1f9015f156af
+
 Hardware:
 - Raspberry Pi OS 4 +
 
