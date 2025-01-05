@@ -78,6 +78,8 @@ After=network.target
 User=pi
 Group=www-data
 WorkingDirectory=$APP_DIR
+Environment=\"FLASK_ENV=production\"
+Environment=\"RUN_SCHEDULER=true\"
 ExecStart=$APP_DIR/venv/bin/gunicorn -w 4 -b 127.0.0.1:5000 app:app
 
 [Install]

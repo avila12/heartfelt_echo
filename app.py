@@ -51,8 +51,8 @@ scheduler.add_job(
 scheduler.add_job(
     lambda: set_monitor_state("off"),
     'cron',
-    hour=19,
-    minute=55,
+    hour=20,
+    minute=7,
     misfire_grace_time=60,
     id="monitor_off_job"
 )
