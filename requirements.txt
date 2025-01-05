@@ -4,5 +4,4 @@ requests
 ics
 gunicorn
 apscheduler
-apscheduler[sqlalchemy]
 

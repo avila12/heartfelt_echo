@@ -1,8 +1,6 @@
 import os
 from flask import Flask, render_template, jsonify, request, send_file
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.executors.pool import ThreadPoolExecutor
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import atexit
@@ -26,18 +24,7 @@ os.environ["DISPLAY"] = ":0"
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("apscheduler").setLevel(logging.DEBUG)
 
-# Configure the job store and scheduler
-jobstores = {
-    'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')  # Use SQLite for testing
-}
-executors = {
-    'default': ThreadPoolExecutor(20)  # Limit concurrency
-}
-job_defaults = {
-    'coalesce': True,  # Combine missed job executions into one
-    'max_instances': 1  # Prevent overlapping jobs
-}
-scheduler = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
+scheduler = BackgroundScheduler()
 
 # Add jobs
 scheduler.add_job(
@@ -52,10 +39,13 @@ scheduler.add_job(
     lambda: set_monitor_state("off"),
     'cron',
     hour=20,
-    minute=7,
+    minute=40,
     misfire_grace_time=60,
     id="monitor_off_job"
 )
+
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
 
 # Flask app
 app = Flask(__name__)
@@ -189,7 +179,4 @@ def debug_jobs():
     return jsonify({"scheduled_jobs": [job.__str__() for job in jobs]}), 200
 
 if __name__ == "__main__":
-    if os.getenv("RUN_SCHEDULER", "false").lower() == "true":
-        scheduler.start()
-        atexit.register(lambda: scheduler.shutdown())
     app.run(host="0.0.0.0", port=5000)
