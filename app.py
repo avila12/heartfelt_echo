@@ -10,6 +10,7 @@ import logging
 from scripts.google_calendar import get_google_calendar_data
 from scripts.photo import photo_cycler
 from scripts.monitor_control import set_monitor_state
+from scripts.utils import convert_to_24_hour
 from scripts.weatherapi import (
     get_forecast_data_or_cached,
     get_forecast_cached_data,
@@ -24,25 +25,35 @@ os.environ["DISPLAY"] = ":0"
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("apscheduler").setLevel(logging.DEBUG)
 
+monitor_wake_time = os.getenv("MONITOR_WAKE", None)
+monitor_sleep_time = os.getenv("MONITOR_SLEEP", None)
+
 scheduler = BackgroundScheduler()
 
 # Add jobs
-scheduler.add_job(
-    lambda: set_monitor_state("on_rotate_left"),
-    'cron',
-    hour=8,
-    minute=0,
-    misfire_grace_time=60,
-    id="monitor_on_job"
-)
-scheduler.add_job(
-    lambda: set_monitor_state("off"),
-    'cron',
-    hour=20,
-    minute=40,
-    misfire_grace_time=60,
-    id="monitor_off_job"
-)
+if monitor_wake_time:
+    monitor_wake_time_24hr = convert_to_24_hour(monitor_wake_time)
+    wake_hour, wake_minute = map(int, monitor_wake_time_24hr.split(':'))
+    scheduler.add_job(
+        lambda: set_monitor_state("on_rotate_left"),
+        'cron',
+        hour=wake_hour,
+        minute=wake_minute,
+        misfire_grace_time=60,
+        id="monitor_on_job"
+    )
+
+if monitor_sleep_time:
+    sleep_time_24hr = convert_to_24_hour(monitor_sleep_time)
+    sleep_hour, sleep_minute = map(int, sleep_time_24hr.split(':'))
+    scheduler.add_job(
+        lambda: set_monitor_state("off"),
+        'cron',
+        hour=sleep_hour,
+        minute=sleep_minute,
+        misfire_grace_time=60,
+        id="monitor_off_job"
+    )
 
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
