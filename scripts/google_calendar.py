@@ -2,6 +2,10 @@ import requests
 from datetime import datetime, timedelta
 from ics import Calendar
 
+from scripts.hfe_logging import configure_logging
+
+logging = configure_logging()
+
 
 def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
     grouped_events = {}
@@ -69,9 +73,9 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                     )
 
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching calendar data: {e}")  # Consider logging this instead
+        logging.debug(f"Error fetching calendar data: {e}")
 
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")  # Consider logging this instead
+        logging.debug(f"An unexpected error occurred: {e}")
 
     return grouped_events
