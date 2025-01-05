@@ -24,8 +24,6 @@ os.environ["DISPLAY"] = ":0"
 # Logging setup
 logging = configure_logging()
 
-logging.getLogger("apscheduler").setLevel(logging.DEBUG)
-
 monitor_wake_time = os.getenv("MONITOR_WAKE", None)
 monitor_sleep_time = os.getenv("MONITOR_SLEEP", None)
 
