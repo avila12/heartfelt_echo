@@ -3,13 +3,11 @@ import os
 
 import requests
 from datetime import datetime
-from dotenv import load_dotenv
 
-
+import config
 from scripts.hfe_logging import configure_logging
 
 logging = configure_logging()
-load_dotenv()
 
 """
 https://www.weatherapi.com/docs/#apis-forecast
@@ -403,7 +401,7 @@ def get_forecast_cached_data(zipcode="34688", forecast_file="forecast"):
 def get_forecast_data_or_cached(
     zipcode="34688", days=3, cache_duration=900, file_type="forecast"
 ):
-    rapidapi_key = os.getenv("weatherapi_key", "")
+    rapidapi_key = config.WEATHERAPI_KEY
     headers = {
         "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
         "x-rapidapi-key": rapidapi_key,

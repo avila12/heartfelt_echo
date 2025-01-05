@@ -3,7 +3,7 @@ import itertools
 import os
 from datetime import datetime
 
-PHOTO_ROOT = "photos"
+PHOTO_DIR = "photos"
 
 
 # Create an iterator to cycle through the photos in the current directory
@@ -58,4 +58,4 @@ class PhotoCycler:
         return next(self.photo_iterator)
 
 
-photo_cycler = PhotoCycler(PHOTO_ROOT)
+photo_cycler = PhotoCycler(PHOTO_DIR)
