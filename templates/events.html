@@ -15,15 +15,15 @@
                           <span style="color:#FF0000;">Tomorrow</span>
                       {% endif %}
 
-                      {% if events[0].forcast_data %}
+                      {% if events[0].forecast_data %}
                       <div class="day-forecast">
-                        <span class="weather-icon fa-fw fas {{ events[0].forcast_data.fa_icon }}"></span>&nbsp;
+                        <span class="weather-icon fa-fw fas {{ events[0].forecast_data.fa_icon }}"></span>&nbsp;
                           &nbsp;<strong style="color: #c40d0d">Hi:</strong>
-                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forcast_data.maxtemp_f }}°</span>
+                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forecast_data.maxtemp_f }}°</span>
                           <strong style="color: #c40d0d">Lo:</strong>
-                          <span class="forecast-low" style="padding-left: 0">{{ events[0].forcast_data.mintemp_f }}°</span>
+                          <span class="forecast-low" style="padding-left: 0">{{ events[0].forecast_data.mintemp_f }}°</span>
                           &nbsp;<span class="fal fa-cloud-rain"></span>
-                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forcast_data.daily_chance_of_rain }}%</span>
+                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forecast_data.daily_chance_of_rain }}%</span>
                       </div>
                       {% endif %}
                   </div>

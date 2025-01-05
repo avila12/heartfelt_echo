@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from ics import Calendar
 
 
-def get_google_calendar_data(url, holiday_url, days=1, forcast=None):
+def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
     grouped_events = {}
 
     try:
@@ -28,7 +28,7 @@ def get_google_calendar_data(url, holiday_url, days=1, forcast=None):
                     event_date = event.begin.date()
                     formatted_date = event_date.strftime("%d %B, %A")
                     date_parts = formatted_date.split(" ")
-                    forcast_date_key = event_date.strftime("%Y-%-m-%-d")
+                    forecast_date_key = event_date.strftime("%Y-%-m-%-d")
 
                     # Format times (12-hour format with AM/PM)
                     start_time_12hr = event.begin.strftime("%I:%M %p")
@@ -44,13 +44,13 @@ def get_google_calendar_data(url, holiday_url, days=1, forcast=None):
                     if formatted_date not in grouped_events:
                         grouped_events[formatted_date] = []
 
-                    if forcast:
+                    if forecast:
                         try:
-                            forcast_data = forcast[forcast_date_key]
+                            forcast_data = forecast[forecast_date_key]
                         except Exception as e:
-                            forcast_data = {}
+                            forecast_data = {}
                     else:
-                        forcast_data = {}
+                        forecast_data = {}
 
                     grouped_events[formatted_date].append(
                         {
@@ -58,12 +58,12 @@ def get_google_calendar_data(url, holiday_url, days=1, forcast=None):
                             "start_time": start_time_12hr if not is_all_day else None,
                             "end_time": end_time_12hr if not is_all_day else None,
                             "date": formatted_date,
-                            "forcast_date_key": forcast_date_key,
+                            "forecast_date_key": forecast_date_key,
                             "day": date_parts[0],
                             "month": date_parts[1].strip(","),
                             "weekday": date_parts[2],
                             "is_all_day": is_all_day,
-                            "forcast_data": forcast_data,
+                            "forecast_data": forecast_data,
                             "source": source,  # Indicate whether event is from Main or Holiday calendar
                         }
                     )
