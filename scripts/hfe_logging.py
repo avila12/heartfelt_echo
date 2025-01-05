@@ -1,6 +1,5 @@
 import logging
-from logging.handlers import RotatingFileHandler
-from cloghandler import ConcurrentRotatingFileHandler  # pip install ConcurrentLogHandler
+from concurrent_log_handler import ConcurrentRotatingFileHandler
 
 
 def configure_logging():
@@ -17,7 +16,7 @@ def configure_logging():
     file_handler = ConcurrentRotatingFileHandler(
         "flask.log", maxBytes=5 * 1024 * 1024, backupCount=5
     )
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.ERROR)
     file_handler.setFormatter(formatter)
 
     # Add the handler to the logger

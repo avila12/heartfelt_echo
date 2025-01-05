@@ -4,5 +4,5 @@ requests
 ics
 gunicorn
 apscheduler
-ConcurrentLogHandler
+concurrent_log_handler
 
