@@ -33,26 +33,26 @@ scheduler = BackgroundScheduler()
 # Add jobs
 if monitor_wake_time:
     monitor_wake_time_24hr = convert_to_24_hour(monitor_wake_time)
-    wake_hour, wake_minute = map(int, monitor_wake_time_24hr.split(':'))
+    wake_hour, wake_minute = map(int, monitor_wake_time_24hr.split(":"))
     scheduler.add_job(
         lambda: set_monitor_state("on_rotate_left"),
-        'cron',
+        "cron",
         hour=wake_hour,
         minute=wake_minute,
         misfire_grace_time=60,
-        id="monitor_on_job"
+        id="monitor_on_job",
     )
 
 if monitor_sleep_time:
     sleep_time_24hr = convert_to_24_hour(monitor_sleep_time)
-    sleep_hour, sleep_minute = map(int, sleep_time_24hr.split(':'))
+    sleep_hour, sleep_minute = map(int, sleep_time_24hr.split(":"))
     scheduler.add_job(
         lambda: set_monitor_state("off"),
-        'cron',
+        "cron",
         hour=sleep_hour,
         minute=sleep_minute,
         misfire_grace_time=60,
-        id="monitor_off_job"
+        id="monitor_off_job",
     )
 
 scheduler.start()
@@ -62,7 +62,8 @@ atexit.register(lambda: scheduler.shutdown())
 app = Flask(__name__)
 
 # Default ZIP code
-zipcode = os.getenv('zipcode', '33615')
+zipcode = os.getenv("zipcode", "33615")
+
 
 # Routes
 @app.route("/")
@@ -76,21 +77,17 @@ def index():
         "showSeconds": int(os.getenv("showSeconds", 1)),
         "showAmpm": int(os.getenv("showAmpm", 1)),
         "time_refresh": int(os.getenv("time_refresh", 1000)),
-
         # Weather configurations
         "weather_route": os.getenv("weather_route", "app/weather"),
         "latitude": os.getenv("latitude", "28.0781"),
         "longitude": os.getenv("longitude", "-82.7637"),
         "weather_refresh": int(os.getenv("weather_refresh", 900000)),
-
         # Astronomy configurations
         "astronomy_route": os.getenv("astronomy_route", "app/astronomy"),
         "astronomy_refresh": int(os.getenv("astronomy_refresh", 900000)),
-
         # Events configurations
         "event_route": os.getenv("event_route", "app/event"),
         "event_refresh": int(os.getenv("event_refresh", 900000)),
-
         # Photo configurations
         "photo_route": os.getenv("photo_route", "app/photo"),
         "photo_transition": int(os.getenv("photo_transition", 1)),
@@ -99,6 +96,7 @@ def index():
     }
     get_forecast_data_or_cached()
     return render_template("index.html", configuration=configuration)
+
 
 @app.route("/app/event")
 def events():
@@ -128,6 +126,7 @@ def events():
         forecast=three_day_forecast,
     )
 
+
 @app.route("/app/weather")
 def weather():
     current_data = get_forecast_cached_data(zipcode="34688", forecast_file="current")
@@ -136,9 +135,11 @@ def weather():
     )
     return current_data
 
+
 @app.route("/app/astronomy")
 def astronomy():
     return get_forecast_cached_data(zipcode=zipcode, forecast_file="astro")
+
 
 @app.route("/app/forcast")
 def forcast():
@@ -150,6 +151,7 @@ def forcast():
         file_type=file,
     )
 
+
 @app.route("/app/photo")
 def get_photo_path():
     try:
@@ -158,6 +160,7 @@ def get_photo_path():
     except Exception as e:
         app.logger.error(f"Error in /app/photo: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/serve-photos")
 def serve_photo(filename):
@@ -169,25 +172,30 @@ def serve_photo(filename):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/set-monitor-state-off")
 def set_monitor_state_off():
     set_monitor_state("off")  # Turn off the screen
     return jsonify({"state": "off"}), 200
+
 
 @app.route("/set-monitor-state-on")
 def set_monitor_state_on():
     set_monitor_state("on_rotate_left")  # Turn on the screen
     return jsonify({"state": "on"}), 200
 
+
 @app.route("/show-jobs")
 def show_jobs():
     jobs = scheduler.get_jobs()
     return jsonify({"scheduled_jobs": [str(job) for job in jobs]}), 200
 
+
 @app.route("/debug-jobs")
 def debug_jobs():
     jobs = scheduler.get_jobs()
     return jsonify({"scheduled_jobs": [job.__str__() for job in jobs]}), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

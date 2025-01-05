@@ -399,7 +399,7 @@ def get_forecast_cached_data(zipcode="34688", forecast_file="forecast"):
 def get_forecast_data_or_cached(
     zipcode="34688", days=3, cache_duration=900, file_type="forecast"
 ):
-    rapidapi_key = os.getenv('weatherapi_key', '')
+    rapidapi_key = os.getenv("weatherapi_key", "")
     headers = {
         "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
         "x-rapidapi-key": rapidapi_key,
