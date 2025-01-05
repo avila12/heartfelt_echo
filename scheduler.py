@@ -7,6 +7,7 @@ from scripts.utils import convert_to_24_hour
 
 scheduler = BackgroundScheduler()
 
+
 def setup_jobs():
     # Add jobs to the scheduler
     if MONITOR_WAKE:
@@ -19,6 +20,7 @@ def setup_jobs():
             minute=wake_minute,
             misfire_grace_time=60,
             id="monitor_on_job",
+            replace_existing=True,  # Ensure job replacement on restart
         )
 
     if MONITOR_SLEEP:
@@ -31,6 +33,7 @@ def setup_jobs():
             minute=sleep_minute,
             misfire_grace_time=60,
             id="monitor_off_job",
+            replace_existing=True,  # Ensure job replacement on restart
         )
 
     scheduler.start()

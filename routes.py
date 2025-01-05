@@ -13,9 +13,24 @@ from scripts.weatherapi import (
     get_forecast_cached_data,
     fontawesome_icon,
 )
+from scripts.hfe_logging import configure_logging
+
+logging = configure_logging()
 
 # Create blueprint for routes
-routes = Blueprint('routes', __name__)
+routes = Blueprint("routes", __name__)
+
+
+@routes.before_request
+def log_request_info():
+    logging.info(f"Request: {request.method} {request.path}")
+
+
+@routes.errorhandler(Exception)
+def handle_exception(e):
+    logging.error(f"Unhandled exception: {str(e)}")
+    return jsonify({"error": "An unexpected error occurred"}), 500
+
 
 @routes.route("/")
 def index():
@@ -67,7 +82,10 @@ def events():
         return ""
 
     grouped_events = get_google_calendar_data(
-        url=event_url, holiday_url=event_holiday_url, days=7, forecast=three_day_forecast
+        url=event_url,
+        holiday_url=event_holiday_url,
+        days=7,
+        forecast=three_day_forecast,
     )
     return render_template(
         "events.html",
@@ -113,13 +131,15 @@ def get_photo_path():
         return jsonify({"error": str(e)}), 500
 
 
-@routes.route("/serve-photos")
-def serve_photo(filename):
+@routes.route("/photos/<path>/<filename>")
+def serve_photo(path, filename):
     try:
-        all_photos = photo_cycler.photos
-        for photo in all_photos:
-            return send_file(photo)
-        return jsonify({"error": "File not found."}), 404
+        # Securely construct the file path
+        file_path = os.path.join("photos", path, filename)
+        # Verify the file exists
+        if not os.path.isfile(file_path):
+            return jsonify({"error": "File not found"}), 404
+        return send_file(file_path)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
