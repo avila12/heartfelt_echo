@@ -136,7 +136,7 @@ def serve_photo(filename):
 import atexit
 # Scheduler setup to turn on/off monitor
 scheduler = BackgroundScheduler()
-scheduler.add_job(set_monitor_state, 'cron', hour=19, minute=2, args=["off"])  # Turn off at 10:00 PM
+scheduler.add_job(set_monitor_state, 'cron', hour=19, minute=12, args=["off"])  # Turn off at 10:00 PM
 scheduler.add_job(set_monitor_state, 'cron', hour=8, minute=0, args=["on_rotate_left"])   # Turn on at 7:00 AM
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
