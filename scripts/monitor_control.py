@@ -1,11 +1,13 @@
-import os
 import subprocess
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 def set_monitor_state(state):
     """
     Controls the monitor state using xrandr.
     :param state: "off", "on_rotate_left"
     """
+    logging.debug(f"Setting monitor state to: {state}")
     try:
         if state == "off":
             subprocess.run(["xrandr", "--output", "HDMI-1", "--off"], check=True)
