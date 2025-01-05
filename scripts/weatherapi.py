@@ -5,6 +5,10 @@ import requests
 from datetime import datetime
 from dotenv import load_dotenv
 
+
+from scripts.hfe_logging import configure_logging
+
+logging = configure_logging()
 load_dotenv()
 
 """
@@ -473,12 +477,12 @@ def get_forecast_data_or_cached(
         ]
 
     except requests.RequestException as e:
-        print(f"Failed to fetch new weather data: {e}")
+        logging.debug(f"Weather failed to fetch new weather data: {e}")
         if os.path.exists(file_to_open):
             with open(file_to_open, "r") as file:
                 cached_data = json.load(file)
-            print("Returning cached weather data due to API fetch failure.")
+            logging.debug("Returning cached weather data due to API fetch failure.")
             return cached_data["data"]
         else:
-            print("No cached data available.")
+            logging.debug("No weather cached data available.")
             return {}
