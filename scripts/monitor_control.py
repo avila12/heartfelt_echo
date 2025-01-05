@@ -1,11 +1,8 @@
 import subprocess
-import logging
 
-logging.basicConfig(
-    filename="flask.log",  # Log file
-    level=logging.DEBUG,  # Log level
-    format="%(asctime)s %(levelname)s: %(message)s",
-)
+from scripts.hfe_logging import configure_logging
+
+logging = configure_logging()
 
 
 def set_monitor_state(state):

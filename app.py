@@ -4,10 +4,10 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import atexit
-import logging
 
 # Import custom scripts
 from scripts.google_calendar import get_google_calendar_data
+from scripts.hfe_logging import configure_logging
 from scripts.photo import photo_cycler
 from scripts.monitor_control import set_monitor_state
 from scripts.utils import convert_to_24_hour
@@ -22,7 +22,8 @@ load_dotenv()
 os.environ["DISPLAY"] = ":0"
 
 # Logging setup
-logging.basicConfig(level=logging.INFO)
+
+logging = configure_logging()
 logging.getLogger("apscheduler").setLevel(logging.DEBUG)
 
 monitor_wake_time = os.getenv("MONITOR_WAKE", None)
