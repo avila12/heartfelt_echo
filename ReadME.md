@@ -43,6 +43,7 @@ Ensure you have the following installed:
    
 2. Clone the repository:
     ```bash
+    sudo apt install git
     git clone https://github.com/avila12/heartfelt_echo
     cd heartfelt_echo
     ```
