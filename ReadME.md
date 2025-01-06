@@ -43,11 +43,12 @@ OS
     cd heartfelt_echo
     ```
 
-3. Create .env file and Configuration:
+3. Create .env file:
     ```bash
     sudo nanao .env
     ```
 
+4. Modify .env file and Set up environment variables for sensitive data:
     ```bash
     FLASK_PORT=5000
     WEATHERAPI_KEY = <your key>
@@ -55,7 +56,7 @@ OS
     EVENT_HOLIDAY_URL = <your holiday calendar url>
     ```
 
-4. Install dependencies:
+5. Install dependencies:
     ```bash
     chmod +x install.sh
     ./setup_kiosk.sh
@@ -81,13 +82,6 @@ OS
 ```
 
 ---
-
-## Configuration
-- Modify `.env` for environment-specific settings.
-- Set up environment variables for sensitive data such as API keys and database URIs:
-
----
-
 
 ## License
 
