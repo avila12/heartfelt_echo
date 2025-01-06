@@ -59,8 +59,10 @@ def index():
         "photo_transition": config.PHOTO_TRANSITION,
         "photo_refresh_interval": config.PHOTO_REFRESH_INTERVAL,
         "photo_fade_duration": config.PHOTO_FADE_DURATION,
+        # forcast configurations
+        "weather_api_refresh_interval": config.WEATHER_API_REFRESH_INTERVAL
     }
-    get_forecast_data_or_cached()
+    get_forecast_data_or_cached(zipcode=config.ZIPCODE, days=config.FORECAST_DAYS, cache_duration=config.CACHE_DURATION, weather_data_type="forecast")
     return render_template("index.html", configuration=configuration)
 
 
@@ -112,12 +114,12 @@ def astronomy():
 
 @routes.route("/app/forecast")
 def forecast():
-    file = request.args.get("file", "current")
+    weather_data_type = request.args.get("weather_data_type", "current")
     return get_forecast_data_or_cached(
         zipcode=config.ZIPCODE,
         days=config.FORECAST_DAYS,
         cache_duration=config.CACHE_DURATION,
-        file_type=file,
+        weather_data_type=weather_data_type,
     )
 
 

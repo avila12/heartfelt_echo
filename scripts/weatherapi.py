@@ -6,6 +6,7 @@ from datetime import datetime
 
 import config
 from scripts.hfe_logging import configure_logging
+from scripts.utils import to_milliseconds
 
 logging = configure_logging()
 
@@ -399,7 +400,7 @@ def get_forecast_cached_data(zipcode="34688", forecast_file="forecast"):
 
 
 def get_forecast_data_or_cached(
-    zipcode="34688", days=3, cache_duration=900, file_type="forecast"
+    zipcode="34688", days=3, cache_duration=to_milliseconds(10, "minutes"), weather_data_type="forecast"
 ):
     rapidapi_key = config.WEATHERAPI_KEY
     headers = {
@@ -415,7 +416,7 @@ def get_forecast_data_or_cached(
         "astro": f"{zipcode}_astro_cache.json",
     }
 
-    file_to_open = cache_files.get(file_type, cache_files["current"])
+    file_to_open = cache_files.get(weather_data_type, cache_files["current"])
 
     # Check if cache exists and is valid
     if os.path.exists(file_to_open):
@@ -471,7 +472,7 @@ def get_forecast_data_or_cached(
                 json.dump({"timestamp": datetime.now().isoformat(), "data": data}, file)
 
         return {"forecast": forecast_list, "current": current_data, "astro": astro}[
-            file_type
+            weather_data_type
         ]
 
     except requests.RequestException as e:
