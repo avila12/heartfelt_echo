@@ -47,8 +47,15 @@ OS
     ```bash
     sudo nanao .env
     ```
+4. .env values:
+   ```bash
+    FLASK_PORT=5000
+    WEATHERAPI_KEY = <your key>
+    EVENT_URL = <your calendar url>
+    EVENT_HOLIDAY_URL = <your holiday calendar url>
+    ```
 
-3. Install dependencies:
+5.. Install dependencies:
     ```bash
     chmod +x install.sh
     ./setup_kiosk.sh
