@@ -47,8 +47,8 @@ OS
     ```bash
     sudo nanao .env
     ```
-4. .env values:
-   ```bash
+
+    ```bash
     FLASK_PORT=5000
     WEATHERAPI_KEY = <your key>
     EVENT_URL = <your calendar url>
