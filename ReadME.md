@@ -29,11 +29,6 @@ Hardware:
 OS
 - Raspberry Pi OS Lite
 
-Ensure you have the following installed:
-- Python 3.7+
-- Flask 2.0+
-- Virtualenv
-
 ### Steps
 1. OS Setup:
     ```bash
