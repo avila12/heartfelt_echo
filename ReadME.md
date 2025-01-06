@@ -55,7 +55,7 @@ OS
     EVENT_HOLIDAY_URL = <your holiday calendar url>
     ```
 
-5. Install dependencies:
+4. Install dependencies:
     ```bash
     chmod +x install.sh
     ./setup_kiosk.sh
