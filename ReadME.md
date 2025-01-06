@@ -63,12 +63,17 @@ Ensure you have the following installed:
 
 ```
 .
+|-- photos/                # Photos for backbround
+|-- scripts/               # script mouels
 |-- static/                # Static files (CSS, JS, Images)
 |-- templates/             # HTML templates
 |-- app.py                 # Main application file
 |-- config.py              # Configuration settings
-|-- requirements.txt       # Python dependencies
 |-- README.md              # Project documentation
+|-- requirements.txt       # Python dependencies
+|-- routes.py              # Project routes
+|-- scheduler.py           # Project scheduler
+|-- setup_kiosk.sh         # Raspberry Pi Setup script
 |-- tests/                 # Unit and integration tests
 ```
 

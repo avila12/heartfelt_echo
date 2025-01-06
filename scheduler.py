@@ -1,5 +1,4 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime
 import atexit
 from config import MONITOR_WAKE, MONITOR_SLEEP
 from scripts.monitor_control import set_monitor_state
