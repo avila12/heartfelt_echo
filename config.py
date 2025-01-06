@@ -36,7 +36,7 @@ ZIPCODE = os.getenv("zipcode", "33615")
 
 # Astronomy configurations
 ASTRONOMY_ROUTE = "app/astronomy"
-ASTRONOMY_REFRESH = to_milliseconds(int(os.getenv("ASTRONOMY_REFRESH", 2)), "minutes")
+ASTRONOMY_REFRESH = to_milliseconds(int(os.getenv("ASTRONOMY_REFRESH", 30)), "minutes")
 
 # Events configurations
 EVENT_ROUTE = "app/event"
@@ -50,6 +50,7 @@ PHOTO_TRANSITION = int(os.getenv("PHOTO_TRANSITION", 1))
 PHOTO_REFRESH_INTERVAL = to_milliseconds(int(os.getenv("PHOTO_REFRESH_INTERVAL", 2)), "minutes")
 PHOTO_FADE_DURATION = int(os.getenv("PHOTO_FADE_DURATION", 1000))
 
-# Forecat
+# Weather_api
 FORECAST_DAYS = int(os.getenv("FORECAST_DAYS", 3))
+WEATHER_API_REFRESH_INTERVAL = to_milliseconds(int(os.getenv("PHOTO_REFRESH_INTERVAL", 10)), "minutes")
 CACHE_DURATION = to_milliseconds(int(os.getenv("FORECAST_CACHE_DURATION", 10)), "minutes")
