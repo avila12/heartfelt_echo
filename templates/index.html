@@ -168,7 +168,7 @@
             <!-- /weather-alert- Not used need new placement -->
 
             <div id="clock" class="clock clock-container bright">
-                <div class="time large">
+                <div class="time large bright">
                     --:-- <span class="sec">--</span>
                     <span class="time-ampm">PM</span>
                 </div>
@@ -180,7 +180,14 @@
                 </div>
             </div>
         </header>
-        <div id="calendar" class="events"></div><!-- /calendar-scrollable-container -->
+
+        <div id="calendar" class="events">
+            <div class="legend">
+                <span style="color: #c40d0d; font-size: 35px;">EVENT CALENDAR</span>
+            </div>
+            <div id="event_calendar" style="overflow:hidden"></div>
+        </div><!-- /calendar-scrollable-container -->
+
         <div id="progress"></div> <!-- not used trying to get it to work -->
     </div>
     <div id="content" class="abs-zero">
@@ -312,7 +319,7 @@
                 hour: $("#hour"),
                 minute: $("#minute"),
                 second: $("#second"),
-                calendar: $("#calendar"),
+                calendar: $("#event_calendar"),
                 weather: {
                     temp: $("#temperature"),
                     icon: $("#weather-current-icon"),
@@ -372,8 +379,8 @@
         updateDigitalClock(currentTime) {
             const timeFormat = this.settings.timeFormat === 12 ? "h:mm" : "HH:mm";
             const timeString = `${currentTime.format(timeFormat)}
-                ${this.settings.showSeconds ? `<span class="sec">${currentTime.format("ss")}</span>` : ""}
-                ${this.settings.showAmpm ? `<span class="time-ampm">${currentTime.format("A")}</span>` : ""}`;
+                ${this.settings.showSeconds ? `<span class="sec" style="color: #FF0000">${currentTime.format("ss")}</span>` : ""}
+                ${this.settings.showAmpm ? `<span class="time-ampm" style="color: #FF0000">${currentTime.format("A")}</span>` : ""}`;
 
             this.dom.clock.html(timeString);
         }
@@ -402,7 +409,7 @@
                     weather.wind.text(`${data.wind_mph} mph ${data.wind_dir}`);
                     weather.humidity.text(`${data.humidity}%`);
                 },
-                () => console.error('Error fetching weather data.')
+                () => console.error('Error fetching cached weather data.')
             );
         }
 
@@ -414,14 +421,14 @@
                     this.dom.weather.sunsetSunriseTime.text(isSunUp ? data.sunset : data.sunrise);
                     this.dom.weather.sunsetSunriseIcon.attr("class", isSunUp ? "fal fa-sunset" : "fal fa-sunrise");
                 },
-                () => console.error('Error fetching astronomy data.')
+                () => console.error('Error fetching cached astronomy data.')
             );
         }
 
         updateEvents() {
             this.dom.eventsLoading.show();
             this.dom.calendar.load('{{ configuration['event_route'] }}', () => {
-                $(window).trigger("resize");
+                // $(window).trigger("resize");
                 this.dom.eventsLoading.hide();
             });
         }

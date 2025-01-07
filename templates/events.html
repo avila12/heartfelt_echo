@@ -1,7 +1,4 @@
-<div class="legend">
-    <span style="color: #c40d0d; font-size: 35px;">EVENT CALENDAR</span>
-</div>
-<div style="overflow:hidden">
+
     <div class="calendar-scrollable-container">
         <div class="calendar-agenda">
           {% for date, events in grouped_events.items() %}
@@ -29,8 +26,11 @@
                   </div>
                   <ul>
                     {% for event in events %}
-                        {# optinal class for back ground (white has-event-background) #}
-                        <li class="#039be5" style="border-left-color:#039be5;">
+                        {% if event.location == 'out' %}
+                        <li class="white has-event-background">
+                        {% else %}
+                        <li style="border-left-color:#039be5;">
+                        {% endif %}
                             <div class="agenda-event-time">
                               {% if event.is_all_day %}
                                   <div class="agenda-event-time-start">All day</div>
@@ -41,7 +41,7 @@
                             </div>
                             <div class="agenda-event-details">
                                 <div class="agenda-event-summary">{{ event.summary }}</div>
-                                <div class="agenda-event-location"></div>
+                                <div class="agenda-event-location">{{ event.description }}</div>
                             </div>
                             <div style="clear: both; height: 0;"></div>
                         </li>
@@ -52,4 +52,4 @@
         </div>  <!-- /calendar-agenda -->
     </div>
     <!-- /calendar-scrollable-container -->
-</div>
+

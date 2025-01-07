@@ -86,7 +86,7 @@ def events():
     grouped_events = get_google_calendar_data(
         url=event_url,
         holiday_url=event_holiday_url,
-        days=7,
+        days=7,  # TODO: Make this better
         forecast=three_day_forecast,
     )
     return render_template(
