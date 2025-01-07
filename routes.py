@@ -60,9 +60,14 @@ def index():
         "photo_refresh_interval": config.PHOTO_REFRESH_INTERVAL,
         "photo_fade_duration": config.PHOTO_FADE_DURATION,
         # forcast configurations
-        "weather_api_refresh_interval": config.WEATHER_API_REFRESH_INTERVAL
+        "weather_api_refresh_interval": config.WEATHER_API_REFRESH_INTERVAL,
     }
-    get_forecast_data_or_cached(zipcode=config.ZIPCODE, days=config.FORECAST_DAYS, cache_duration=config.CACHE_DURATION, weather_data_type="forecast")
+    get_forecast_data_or_cached(
+        zipcode=config.ZIPCODE,
+        days=config.FORECAST_DAYS,
+        cache_duration=config.CACHE_DURATION,
+        weather_data_type="forecast",
+    )
     return render_template("index.html", configuration=configuration)
 
 

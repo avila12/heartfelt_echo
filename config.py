@@ -47,10 +47,16 @@ EVENT_HOLIDAY_URL = os.getenv("EVENT_HOLIDAY_URL", "")
 # Photo configurations
 PHOTO_ROUTE = "app/photo"
 PHOTO_TRANSITION = int(os.getenv("PHOTO_TRANSITION", 1))
-PHOTO_REFRESH_INTERVAL = to_milliseconds(int(os.getenv("PHOTO_REFRESH_INTERVAL", 2)), "minutes")
+PHOTO_REFRESH_INTERVAL = to_milliseconds(
+    int(os.getenv("PHOTO_REFRESH_INTERVAL", 2)), "minutes"
+)
 PHOTO_FADE_DURATION = int(os.getenv("PHOTO_FADE_DURATION", 1000))
 
 # Weather_api
 FORECAST_DAYS = int(os.getenv("FORECAST_DAYS", 3))
-WEATHER_API_REFRESH_INTERVAL = to_milliseconds(int(os.getenv("PHOTO_REFRESH_INTERVAL", 10)), "minutes")
-CACHE_DURATION = to_milliseconds(int(os.getenv("FORECAST_CACHE_DURATION", 10)), "minutes")
+WEATHER_API_REFRESH_INTERVAL = to_milliseconds(
+    int(os.getenv("PHOTO_REFRESH_INTERVAL", 10)), "minutes"
+)
+CACHE_DURATION = to_milliseconds(
+    int(os.getenv("FORECAST_CACHE_DURATION", 10)), "minutes"
+)

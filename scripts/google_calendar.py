@@ -42,8 +42,8 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
 
                     # Check if the event is all-day
                     is_all_day = (
-                            event.begin.time() == datetime.min.time()
-                            and event.end.time() == datetime.min.time()
+                        event.begin.time() == datetime.min.time()
+                        and event.end.time() == datetime.min.time()
                     )
 
                     # Group events by formatted date
@@ -56,21 +56,23 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                         # Safely get the data or default to {}
                         forecast_data = forecast.get(forecast_date_key, {})
 
-                    grouped_events[formatted_date].append({
-                        "summary": event.name or "Unnamed Event",
-                        "description": event.description or "",
-                        "location": event.location or "",
-                        "start_time": None if is_all_day else start_time_12hr,
-                        "end_time": None if is_all_day else end_time_12hr,
-                        "date": formatted_date,
-                        "forecast_date_key": forecast_date_key,
-                        "day": date_parts[0],
-                        "month": date_parts[1].strip(","),
-                        "weekday": date_parts[2],
-                        "is_all_day": is_all_day,
-                        "forecast_data": forecast_data,  # store the actual forecast data
-                        "source": source,
-                    })
+                    grouped_events[formatted_date].append(
+                        {
+                            "summary": event.name or "Unnamed Event",
+                            "description": event.description or "",
+                            "location": event.location or "",
+                            "start_time": None if is_all_day else start_time_12hr,
+                            "end_time": None if is_all_day else end_time_12hr,
+                            "date": formatted_date,
+                            "forecast_date_key": forecast_date_key,
+                            "day": date_parts[0],
+                            "month": date_parts[1].strip(","),
+                            "weekday": date_parts[2],
+                            "is_all_day": is_all_day,
+                            "forecast_data": forecast_data,  # store the actual forecast data
+                            "source": source,
+                        }
+                    )
 
     except requests.exceptions.RequestException as e:
         logging.debug(f"Error fetching calendar data: {e}")

@@ -400,7 +400,10 @@ def get_forecast_cached_data(zipcode="34688", forecast_file="forecast"):
 
 
 def get_forecast_data_or_cached(
-    zipcode="34688", days=3, cache_duration=to_milliseconds(10, "minutes"), weather_data_type="forecast"
+    zipcode="34688",
+    days=3,
+    cache_duration=to_milliseconds(10, "minutes"),
+    weather_data_type="forecast",
 ):
     rapidapi_key = config.WEATHERAPI_KEY
     headers = {
