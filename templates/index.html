@@ -344,6 +344,7 @@
 
         scheduleUpdates() {
             setInterval(() => this.updateTime(), {{ configuration['time_refresh'] }});
+            setInterval(() => this.updateWeatherAPIData(), {{ configuration['weather_api_refresh'] }})
             setInterval(() => this.updateWeather(), {{ configuration['weather_refresh'] }});
             setInterval(() => this.updateAstronomy(), {{ configuration['astronomy_refresh'] }});
             setInterval(() => this.updateEvents(), {{ configuration['event_refresh'] }});
@@ -396,6 +397,14 @@
 
         fetchData(url, successCallback, errorCallback) {
             $.getJSON(url, successCallback).fail(errorCallback);
+        }
+
+        updateWeatherAPIData() {
+            this.fetchData(
+                '{{ configuration['weather_api_route'] }}',
+                (data) => {},
+                () => console.error('Error fetching weather data.')
+            );
         }
 
         updateWeather() {

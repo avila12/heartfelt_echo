@@ -28,7 +28,6 @@ TIME_REFRESH = to_milliseconds(int(os.getenv("TIME_REFRESH", 1)), "seconds")
 
 # Weather configurations
 WEATHER_ROUTE = "app/weather"
-WEATHERAPI_KEY = os.getenv("WEATHERAPI_KEY", "")
 WEATHER_REFRESH = to_milliseconds(int(os.getenv("WEATHER_REFRESH", 2)), "minutes")
 LATITUDE = os.getenv("LATITUDE", "28.0781")
 LONGITUDE = os.getenv("LONGITUDE", "-82.7637")
@@ -53,10 +52,12 @@ PHOTO_REFRESH_INTERVAL = to_milliseconds(
 PHOTO_FADE_DURATION = int(os.getenv("PHOTO_FADE_DURATION", 1000))
 
 # Weather_api
+WEATHER_API_ROUTE = "app/weather-api"
 FORECAST_DAYS = int(os.getenv("FORECAST_DAYS", 3))
-WEATHER_API_REFRESH_INTERVAL = to_milliseconds(
-    int(os.getenv("PHOTO_REFRESH_INTERVAL", 10)), "minutes"
+WEATHERAPI_KEY = os.getenv("WEATHERAPI_KEY", "")
+WEATHER_API_REFRESH = to_milliseconds(
+    int(os.getenv("WEATHER_API_REFRESH", 15)), "minutes"
 )
 CACHE_DURATION = to_milliseconds(
-    int(os.getenv("FORECAST_CACHE_DURATION", 10)), "minutes"
+    int(os.getenv("FORECAST_CACHE_DURATION", 14)), "minutes"
 )

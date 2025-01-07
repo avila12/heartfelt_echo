@@ -60,7 +60,8 @@ def index():
         "photo_refresh_interval": config.PHOTO_REFRESH_INTERVAL,
         "photo_fade_duration": config.PHOTO_FADE_DURATION,
         # forcast configurations
-        "weather_api_refresh_interval": config.WEATHER_API_REFRESH_INTERVAL,
+        "weather_api_route": config.WEATHER_API_ROUTE,
+        "weather_api_refresh": config.WEATHER_API_REFRESH,
     }
     get_forecast_data_or_cached(
         zipcode=config.ZIPCODE,
@@ -117,8 +118,8 @@ def astronomy():
     return get_forecast_cached_data(zipcode=config.ZIPCODE, forecast_file="astro")
 
 
-@routes.route("/app/forecast")
-def forecast():
+@routes.route("/app/weather-api")
+def weather_api():
     weather_data_type = request.args.get("weather_data_type", "current")
     return get_forecast_data_or_cached(
         zipcode=config.ZIPCODE,
