@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Photo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0; /* Optional background color */
+        }
+        img {
+            width: 100vw; /* Full viewport width */
+            height: auto; /* Automatically scale height to maintain aspect ratio */
+            display: block; /* Remove any extra spacing below the image */
+        }
+    </style>
+</head>
+<body>
+    <h1>Uploaded Photo</h1>
+    <img src="{{ '/photos/default/' + filename }}" alt="Uploaded Photo">
+    <br>
+    <a href="/admin/dashboard/photo">Upload Another</a>
+</body>
+</html>

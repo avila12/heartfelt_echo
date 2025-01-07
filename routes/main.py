@@ -18,21 +18,21 @@ from scripts.hfe_logging import configure_logging
 logging = configure_logging()
 
 # Create blueprint for routes
-routes = Blueprint("routes", __name__)
+main_bp = Blueprint("main", __name__)
 
 
-@routes.before_request
+@main_bp.before_request
 def log_request_info():
     logging.info(f"Request: {request.method} {request.path}")
 
 
-@routes.errorhandler(Exception)
+@main_bp.errorhandler(Exception)
 def handle_exception(e):
     logging.error(f"Unhandled exception: {str(e)}")
     return jsonify({"error": "An unexpected error occurred"}), 500
 
 
-@routes.route("/")
+@main_bp.route("/")
 def index():
     configuration = {
         # Time configurations
@@ -73,7 +73,7 @@ def index():
     return render_template("index.html", configuration=configuration)
 
 
-@routes.route("/app/event")
+@main_bp.route("/app/event")
 def events():
     today = datetime.now()
     tomorrow = today + timedelta(days=1)
@@ -105,7 +105,7 @@ def events():
     )
 
 
-@routes.route("/app/weather")
+@main_bp.route("/app/weather")
 def weather():
     current_data = get_forecast_cached_data(zipcode="34688", forecast_file="current")
     current_data["condition"]["fa_icon"] = fontawesome_icon(
@@ -114,12 +114,12 @@ def weather():
     return current_data
 
 
-@routes.route("/app/astronomy")
+@main_bp.route("/app/astronomy")
 def astronomy():
     return get_forecast_cached_data(zipcode=config.ZIPCODE, forecast_file="astro")
 
 
-@routes.route("/app/weather-api")
+@main_bp.route("/app/weather-api")
 def weather_api():
     weather_data_type = request.args.get("weather_data_type", "current")
     return get_forecast_data_or_cached(
@@ -130,7 +130,7 @@ def weather_api():
     )
 
 
-@routes.route("/app/photo")
+@main_bp.route("/app/photo")
 def get_photo_path():
     try:
         photo_path = photo_cycler.get_next_photo()
@@ -140,7 +140,7 @@ def get_photo_path():
         return jsonify({"error": str(e)}), 500
 
 
-@routes.route("/photos/<path>/<filename>")
+@main_bp.route("/photos/<path>/<filename>")
 def serve_photo(path, filename):
     try:
         # Securely construct the file path
@@ -153,25 +153,25 @@ def serve_photo(path, filename):
         return jsonify({"error": str(e)}), 500
 
 
-@routes.route("/set-monitor-state-off")
+@main_bp.route("/set-monitor-state-off")
 def set_monitor_state_off():
     set_monitor_state("off")  # Turn off the screen
     return jsonify({"state": "off"}), 200
 
 
-@routes.route("/set-monitor-state-on")
+@main_bp.route("/set-monitor-state-on")
 def set_monitor_state_on():
     set_monitor_state("on_rotate_left")  # Turn on the screen
     return jsonify({"state": "on"}), 200
 
 
-@routes.route("/show-jobs")
+@main_bp.route("/show-jobs")
 def show_jobs():
     jobs = scheduler.get_jobs()
     return jsonify({"scheduled_jobs": [str(job) for job in jobs]}), 200
 
 
-@routes.route("/debug-jobs")
+@main_bp.route("/debug-jobs")
 def debug_jobs():
     jobs = scheduler.get_jobs()
     return jsonify({"scheduled_jobs": [job.__str__() for job in jobs]}), 200
