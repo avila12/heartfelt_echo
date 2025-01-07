@@ -39,6 +39,7 @@ def minutes_to_seconds(minutes):
     """
     return minutes * 60
 
+
 def safe_round(value, default=0, precision=0):
     try:
         # Round the value to the specified precision and convert to integer

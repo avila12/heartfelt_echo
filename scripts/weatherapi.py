@@ -400,10 +400,10 @@ def get_forecast_cached_data(zipcode=config.ZIPCODE, forecast_file="forecast"):
 
 
 def get_forecast_data_or_cached(
-        zipcode=config.ZIPCODE,
-        days=config.FORECAST_DAYS,
-        cache_duration=minutes_to_seconds(10),
-        weather_data_type="forecast",
+    zipcode=config.ZIPCODE,
+    days=config.FORECAST_DAYS,
+    cache_duration=minutes_to_seconds(10),
+    weather_data_type="forecast",
 ):
     """
     Fetches weather data (forecast, current, or astro) from cache or API.

@@ -59,4 +59,5 @@ WEATHER_API_REFRESH = to_milliseconds(
     int(os.getenv("WEATHER_API_REFRESH", 15)), "minutes"
 )
 WEATHER_API_CACHE_DURATION = minutes_to_seconds(
-    int(os.getenv("WEATHER_API_CACHE_DURATION", 14)))
+    int(os.getenv("WEATHER_API_CACHE_DURATION", 14))
+)

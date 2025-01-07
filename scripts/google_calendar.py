@@ -33,7 +33,6 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
         for source, calendar_obj in [("Main", cal), ("Holiday", holiday_cal)]:
             # Sort events by start time
             for event in sorted(calendar_obj.events, key=lambda e: e.begin):
-
                 # ---- Convert event begin/end to local time ----
                 event_start_local = event.begin.astimezone(local_tz)
                 event_end_local = event.end.astimezone(local_tz)
@@ -49,8 +48,8 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
 
                     # Check if the event is all-day by comparing times to 00:00
                     is_all_day = (
-                            event_start_local.time() == datetime.min.time()
-                            and event_end_local.time() == datetime.min.time()
+                        event_start_local.time() == datetime.min.time()
+                        and event_end_local.time() == datetime.min.time()
                     )
 
                     # Format times (12-hour format with AM/PM)
@@ -62,11 +61,17 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                         grouped_events[formatted_date] = []
 
                     # Fetch the forecast data if a forecast is provided
-                    forecast_data = forecast.get(forecast_date_key, {}) if forecast else {}
+                    forecast_data = (
+                        forecast.get(forecast_date_key, {}) if forecast else {}
+                    )
 
                     if forecast_data:
-                        forecast_data["maxtemp_f"] = safe_round(forecast_data.get("maxtemp_f"))
-                        forecast_data["mintemp_f"] = safe_round(forecast_data.get("mintemp_f"))
+                        forecast_data["maxtemp_f"] = safe_round(
+                            forecast_data.get("maxtemp_f")
+                        )
+                        forecast_data["mintemp_f"] = safe_round(
+                            forecast_data.get("mintemp_f")
+                        )
 
                     grouped_events[formatted_date].append(
                         {
