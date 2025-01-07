@@ -28,6 +28,8 @@
                     {% for event in events %}
                         {% if event.location == 'out' %}
                         <li class="white has-event-background">
+                        {% elif event.location == 'food' %}
+                        <li class="yellow has-event-background">
                         {% else %}
                         <li style="border-left-color:#039be5;">
                         {% endif %}

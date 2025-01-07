@@ -38,3 +38,11 @@ def minutes_to_seconds(minutes):
     - The equivalent value in seconds.
     """
     return minutes * 60
+
+def safe_round(value, default=0, precision=0):
+    try:
+        # Round the value to the specified precision and convert to integer
+        rounded_value = round(float(value), precision)
+        return int(rounded_value)  # Remove any remaining decimals by converting to int
+    except (ValueError, TypeError):
+        return default

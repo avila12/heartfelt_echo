@@ -5,6 +5,7 @@ import pytz
 
 import config
 from scripts.hfe_logging import configure_logging
+from scripts.utils import safe_round
 
 logging = configure_logging()
 
@@ -62,6 +63,10 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
 
                     # Fetch the forecast data if a forecast is provided
                     forecast_data = forecast.get(forecast_date_key, {}) if forecast else {}
+
+                    if forecast_data:
+                        forecast_data["maxtemp_f"] = safe_round(forecast_data.get("maxtemp_f"))
+                        forecast_data["mintemp_f"] = safe_round(forecast_data.get("mintemp_f"))
 
                     grouped_events[formatted_date].append(
                         {
