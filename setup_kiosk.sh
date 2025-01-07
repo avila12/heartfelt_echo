@@ -98,16 +98,18 @@ server {
     listen 80;
     server_name '"$HOSTNAME"'.local;
 
+    client_max_body_size 16M;  # Adjust this to match Flask's MAX_CONTENT_LENGTH
+
     # Handle static files
     location /static/ {
         alias '"$STATIC_DIR"'/;
-        autoindex on; # Optional for debugging, can be removed in production
+        autoindex off; # Optional for debugging, can be removed in production
     }
 
     # Handle photo files
     location /photos/ {
         alias '"$PHOTOS_DIR"'/; # Use alias for consistency
-        autoindex on; # Optional for debugging, can be removed in production
+        autoindex off; # Optional for debugging, can be removed in production
     }
 
     location / {
@@ -121,6 +123,11 @@ server {
     location = /404.html {
         root /usr/share/nginx/html;
     }
+
+    # Security headers
+    add_header X-Frame-Options "DENY";
+    add_header X-Content-Type-Options "nosniff";
+    add_header X-XSS-Protection "1; mode=block";
 }
 EOF'
 
