@@ -63,6 +63,13 @@ def index():
         "weather_api_route": config.WEATHER_API_ROUTE,
         "weather_api_refresh": config.WEATHER_API_REFRESH,
     }
+    # update weather data before html loads
+    get_forecast_data_or_cached(
+        zipcode=config.ZIPCODE,
+        days=config.FORECAST_DAYS,
+        cache_duration=config.WEATHER_API_CACHE_DURATION,
+        weather_data_type="forecast",
+    )
     return render_template("index.html", configuration=configuration)
 
 
