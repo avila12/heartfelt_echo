@@ -1,7 +1,9 @@
 import requests
 from datetime import datetime, timedelta
 from ics import Calendar
+import pytz
 
+import config
 from scripts.hfe_logging import configure_logging
 
 logging = configure_logging()
@@ -9,6 +11,8 @@ logging = configure_logging()
 
 def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
     grouped_events = {}
+
+    local_tz = pytz.timezone(config.TIMEZONE)
 
     try:
         # Fetch the main calendar iCal data
@@ -21,40 +25,43 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
         holiday_response.raise_for_status()
         holiday_cal = Calendar(holiday_response.text)
 
-        today = datetime.now()
+        today = datetime.now(tz=local_tz)
         future_date = today + timedelta(days=days)
 
         # Process and filter events from both calendars
         for source, calendar_obj in [("Main", cal), ("Holiday", holiday_cal)]:
+            # Sort events by start time
             for event in sorted(calendar_obj.events, key=lambda e: e.begin):
-                # Filter events within the date range
-                if today.date() <= event.begin.date() <= future_date.date():
-                    event_date = event.begin.date()
-                    formatted_date = event_date.strftime("%d %B, %A")
+
+                # ---- Convert event begin/end to local time ----
+                event_start_local = event.begin.astimezone(local_tz)
+                event_end_local = event.end.astimezone(local_tz)
+
+                # Filter events within the date range based on local time
+                if today.date() <= event_start_local.date() <= future_date.date():
+                    # Format date in the style you want
+                    formatted_date = event_start_local.strftime("%d %B, %A")
                     date_parts = formatted_date.split(" ")
 
-                    # Use %m and %d for better compatibility
-                    forecast_date_key = event_date.strftime("%Y-%m-%d")
+                    # We'll use the local date key for forecast lookups (Y-m-d)
+                    forecast_date_key = event_start_local.strftime("%Y-%m-%d")
+
+                    # Check if the event is all-day by comparing times to 00:00
+                    is_all_day = (
+                            event_start_local.time() == datetime.min.time()
+                            and event_end_local.time() == datetime.min.time()
+                    )
 
                     # Format times (12-hour format with AM/PM)
-                    start_time_12hr = event.begin.strftime("%I:%M %p")
-                    end_time_12hr = event.end.strftime("%I:%M %p")
-
-                    # Check if the event is all-day
-                    is_all_day = (
-                        event.begin.time() == datetime.min.time()
-                        and event.end.time() == datetime.min.time()
-                    )
+                    start_time_12hr = event_start_local.strftime("%I:%M %p")
+                    end_time_12hr = event_end_local.strftime("%I:%M %p")
 
                     # Group events by formatted date
                     if formatted_date not in grouped_events:
                         grouped_events[formatted_date] = []
 
                     # Fetch the forecast data if a forecast is provided
-                    forecast_data = {}
-                    if forecast:
-                        # Safely get the data or default to {}
-                        forecast_data = forecast.get(forecast_date_key, {})
+                    forecast_data = forecast.get(forecast_date_key, {}) if forecast else {}
 
                     grouped_events[formatted_date].append(
                         {
@@ -69,7 +76,7 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                             "month": date_parts[1].strip(","),
                             "weekday": date_parts[2],
                             "is_all_day": is_all_day,
-                            "forecast_data": forecast_data,  # store the actual forecast data
+                            "forecast_data": forecast_data,
                             "source": source,
                         }
                     )
