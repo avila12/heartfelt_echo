@@ -6,7 +6,7 @@ from datetime import datetime
 
 import config
 from scripts.hfe_logging import configure_logging
-from scripts.utils import to_milliseconds
+from scripts.utils import minutes_to_seconds
 
 logging = configure_logging()
 
@@ -382,7 +382,7 @@ def fontawesome_icon(code: int = 1000, day: int = 1):
     return data["fa_icon_day"]
 
 
-def get_forecast_cached_data(zipcode="34688", forecast_file="forecast"):
+def get_forecast_cached_data(zipcode=config.ZIPCODE, forecast_file="forecast"):
     cache_files = {
         "forecast": f"{zipcode}_forecast_cache.json",
         "current": f"{zipcode}_current_data_cache.json",
@@ -400,11 +400,23 @@ def get_forecast_cached_data(zipcode="34688", forecast_file="forecast"):
 
 
 def get_forecast_data_or_cached(
-    zipcode="34688",
-    days=3,
-    cache_duration=to_milliseconds(10, "minutes"),
-    weather_data_type="forecast",
+        zipcode=config.ZIPCODE,
+        days=config.FORECAST_DAYS,
+        cache_duration=minutes_to_seconds(10),
+        weather_data_type="forecast",
 ):
+    """
+    Fetches weather data (forecast, current, or astro) from cache or API.
+
+    Parameters:
+    - zipcode: The ZIP code for the location (default from config).
+    - days: Number of forecast days to retrieve (default from config).
+    - cache_duration: Duration in minutes for cache validity.
+    - weather_data_type: Type of weather data to fetch ('forecast', 'current', or 'astro').
+
+    Returns:
+    - The requested weather data type, either from cache or fetched fresh.
+    """
     rapidapi_key = config.WEATHERAPI_KEY
     headers = {
         "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
@@ -426,8 +438,9 @@ def get_forecast_data_or_cached(
         with open(file_to_open, "r") as file:
             cached_data = json.load(file)
         cached_time = datetime.fromisoformat(cached_data["timestamp"])
+
+        # Returning cached weather data.
         if (datetime.now() - cached_time).total_seconds() < cache_duration:
-            print("Returning cached weather data.")
             return cached_data["data"]
 
     # Fetch new data if cache is expired or missing
@@ -457,7 +470,7 @@ def get_forecast_data_or_cached(
                 "totalprecip_in": forecast_day["day"]["totalprecip_in"],
                 "uv": forecast_day["day"]["uv"],
                 "is_sun_up": forecast_day["astro"]["is_sun_up"],
-                "is_sun_up": forecast_day["astro"]["is_moon_up"],
+                "is_moon_up": forecast_day["astro"]["is_moon_up"],
                 "fa_icon": fontawesome_icon(
                     code=forecast_day["day"]["condition"]["code"], day=1
                 ),

@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from scripts.utils import to_milliseconds
+from scripts.utils import to_milliseconds, minutes_to_seconds
 
 # Load environment variables
 load_dotenv()
@@ -58,6 +58,5 @@ WEATHERAPI_KEY = os.getenv("WEATHERAPI_KEY", "")
 WEATHER_API_REFRESH = to_milliseconds(
     int(os.getenv("WEATHER_API_REFRESH", 15)), "minutes"
 )
-CACHE_DURATION = to_milliseconds(
-    int(os.getenv("FORECAST_CACHE_DURATION", 14)), "minutes"
-)
+WEATHER_API_CACHE_DURATION = minutes_to_seconds(
+    int(os.getenv("WEATHER_API_CACHE_DURATION", 14)))

@@ -25,3 +25,16 @@ def to_milliseconds(value, unit="minutes"):
         return value * 1000
     else:
         raise ValueError("Invalid unit. Use 'minutes' or 'seconds'.")
+
+
+def minutes_to_seconds(minutes):
+    """
+    Convert minutes to seconds.
+
+    Parameters:
+    - minutes: The number of minutes to convert.
+
+    Returns:
+    - The equivalent value in seconds.
+    """
+    return minutes * 60
