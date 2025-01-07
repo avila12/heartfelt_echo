@@ -26,8 +26,8 @@
                   </div>
                   <ul>
                     {% for event in events %}
-                        {% if event.location == 'out' %}
-                        <li class="white has-event-background">
+                        {% if event.location == 'visit' %}
+                        <li class="blue has-event-background">
                         {% elif event.location == 'food' %}
                         <li class="yellow has-event-background">
                         {% else %}
