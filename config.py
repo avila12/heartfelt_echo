@@ -31,7 +31,7 @@ WEATHER_ROUTE = "app/weather"
 WEATHER_REFRESH = to_milliseconds(int(os.getenv("WEATHER_REFRESH", 2)), "minutes")
 LATITUDE = os.getenv("LATITUDE", "28.0781")
 LONGITUDE = os.getenv("LONGITUDE", "-82.7637")
-ZIPCODE = os.getenv("zipcode", "33615")
+ZIPCODE = os.getenv("ZIPCODE", "33615")
 
 # Astronomy configurations
 ASTRONOMY_ROUTE = "app/astronomy"
