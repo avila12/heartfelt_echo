@@ -1,8 +1,9 @@
-Flask
-python-dotenv
-requests
-ics
-gunicorn
-apscheduler
-concurrent_log_handler
+Flask==3.1.0
+python-dotenv==1.0.1
+requests==2.32.3
+ics==0.7.2
+gunicorn==23.0.0
+APScheduler==3.11.0
+concurrent-log-handler==0.9.25
+pytz==2024.2
 
