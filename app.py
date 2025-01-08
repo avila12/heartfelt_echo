@@ -8,7 +8,7 @@ from scheduler import setup_jobs
 app = Flask(__name__)
 
 # Set the maximum upload size to 16MB
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB
 
 # Configure the upload folder for the main app
 app.config["UPLOAD_FOLDER"] = "photos/default"

@@ -27,18 +27,19 @@
                   <ul>
                     {% for event in events %}
                         {% if event.location == 'visit' %}
-                        <li class="blue has-event-background">
+                        <li class="green-bright has-event-background">
                         {% elif event.location == 'food' %}
                         <li class="yellow has-event-background">
                         {% else %}
+{#                        <li class="blue has-event-background">#}
                         <li style="border-left-color:#039be5;">
                         {% endif %}
                             <div class="agenda-event-time">
                               {% if event.is_all_day %}
                                   <div class="agenda-event-time-start">All day</div>
                               {% else %}
-                                  <div class="agenda-event-time-start">{{ event.start_time }}</div>
-                                  <div class="agenda-event-time-end">{{ event.end_time }}</div>
+                                  <div class="agenda-event-time-start" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.start_time }}</div>
+                                  <div class="agenda-event-time-end" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.end_time }}</div>
                               {% endif %}
                             </div>
                             <div class="agenda-event-details">
