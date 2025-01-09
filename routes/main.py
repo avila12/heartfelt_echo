@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import config
 from scheduler import scheduler
-from scripts.google_calendar import get_google_calendar_data
+from scripts.google_calendar2 import get_google_calendar_data
 from scripts.monitor_control import set_monitor_state
 from scripts.photo import photo_cycler
 from scripts.weatherapi import (
@@ -77,10 +77,8 @@ def index():
 def events():
     today = datetime.now()
     tomorrow = today + timedelta(days=1)
-    today_date = today.strftime("%d %B, %A")  # Format date like '05 December, Tuesday'
-    tomorrow_date = tomorrow.strftime(
-        "%d %B, %A"
-    )  # Format date like '06 December, Wednesday'
+    today_date = today.strftime("%d %B, %A")
+    tomorrow_date = tomorrow.strftime("%d %B, %A")
     three_day_forecast = get_forecast_cached_data(
         zipcode=config.ZIPCODE, forecast_file="forecast"
     )
@@ -93,9 +91,22 @@ def events():
     grouped_events = get_google_calendar_data(
         url=event_url,
         holiday_url=event_holiday_url,
-        days=7,  # TODO: Make this better
+        days=7,
         forecast=three_day_forecast,
     )
+
+    # Sort events by start time for each day
+    # need to move this in function
+    for day, events in grouped_events.items():
+        grouped_events[day] = sorted(
+            events,
+            key=lambda event: (
+                datetime.strptime(event["start_time"], "%I:%M %p")
+                if event["start_time"]
+                else datetime.min
+            ),
+        )
+
     return render_template(
         "events.html",
         today_date=today_date,
@@ -136,7 +147,7 @@ def get_photo_path():
         photo_path = photo_cycler.get_next_photo()
         return jsonify({"photo_url": f"/photos/default/{os.path.basename(photo_path)}"})
     except Exception as e:
-        routes.logger.error(f"Error in /app/photo: {str(e)}")
+        main_bp.logger.error(f"Error in /app/photo: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 

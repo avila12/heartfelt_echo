@@ -1,58 +1,54 @@
-
-    <div class="calendar-scrollable-container">
-        <div class="calendar-agenda">
-          {% for date, events in grouped_events.items() %}
-              <div class="day-container">
-                  <div class="agenda-day-header">
+<div class="calendar-scrollable-container">
+    <div class="calendar-agenda">
+        {% for date, events in grouped_events|dictsort(by='key') %}
+            <div class="day-container">
+                <div class="agenda-day-header">
                     <span class="agenda-day-header-num">
                         {{ events[0].day }}</span> &nbsp; {{ events[0].weekday }}
-                      {% if date == today_date %}
-                          <span style="color:#FF0000;">Today</span>
-                      {% elif date == tomorrow_date %}
-                          <span style="color:#FF0000;">Tomorrow</span>
-                      {% endif %}
+                    {% if date == today_date %}
+                        <span style="color:#FF0000;">Today</span>
+                    {% elif date == tomorrow_date %}
+                        <span style="color:#FF0000;">Tomorrow</span>
+                    {% endif %}
 
-                      {% if events[0].forecast_data %}
-                      <div class="day-forecast">
+                    {% if events[0].forecast_data %}
+                    <div class="day-forecast">
                         <span class="weather-icon fa-fw fas {{ events[0].forecast_data.fa_icon }}"></span>&nbsp;
-                          &nbsp;<strong style="color: #c40d0d">Hi:</strong>
-                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forecast_data.maxtemp_f }}°</span>
-                          <strong style="color: #c40d0d">Lo:</strong>
-                          <span class="forecast-low" style="padding-left: 0">{{ events[0].forecast_data.mintemp_f }}°</span>
-                          &nbsp;<span class="fal fa-cloud-rain"></span>
-                          <span class="forecast-high" style="padding-left: 0">{{ events[0].forecast_data.daily_chance_of_rain }}%</span>
-                      </div>
-                      {% endif %}
-                  </div>
-                  <ul>
+                        &nbsp;<strong style="color: #c40d0d">Hi:</strong>
+                        <span class="forecast-high" style="padding-left: 0">{{ events[0].forecast_data.maxtemp_f }}°</span>
+                        <strong style="color: #c40d0d">Lo:</strong>
+                        <span class="forecast-low" style="padding-left: 0">{{ events[0].forecast_data.mintemp_f }}°</span>
+                        &nbsp;<span class="fal fa-cloud-rain"></span>
+                        <span class="forecast-high" style="padding-left: 0">{{ events[0].forecast_data.daily_chance_of_rain }}%</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <ul>
                     {% for event in events %}
                         {% if event.location == 'visit' %}
                         <li class="green-bright has-event-background">
                         {% elif event.location == 'food' %}
                         <li class="yellow has-event-background">
                         {% else %}
-{#                        <li class="blue has-event-background">#}
                         <li style="border-left-color:#039be5;">
                         {% endif %}
                             <div class="agenda-event-time">
-                              {% if event.is_all_day %}
-                                  <div class="agenda-event-time-start">All day</div>
-                              {% else %}
-                                  <div class="agenda-event-time-start" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.start_time }}</div>
-                                  <div class="agenda-event-time-end" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.end_time }}</div>
-                              {% endif %}
+                                {% if event.is_all_day %}
+                                    <div class="agenda-event-time-start">All day</div>
+                                {% else %}
+                                    <div class="agenda-event-time-start" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.start_time }}</div>
+                                    <div class="agenda-event-time-end" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.end_time }}</div>
+                                {% endif %}
                             </div>
                             <div class="agenda-event-details">
-                                <div class="agenda-event-summary">{{ event.summary }}</div>
-                                <div class="agenda-event-location">{{ event.description }}</div>
+                                <div class="agenda-event-summary" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.summary }}</div>
+                                <div class="agenda-event-location" {% if event.is_next_event %}style="color: #ff4f4f"{% endif %}>{{ event.description }}</div>
                             </div>
                             <div style="clear: both; height: 0;"></div>
                         </li>
                     {% endfor %}
-                  </ul>
-              </div>
-          {% endfor %}
-        </div>  <!-- /calendar-agenda -->
-    </div>
-    <!-- /calendar-scrollable-container -->
-
+                </ul>
+            </div>
+        {% endfor %}
+    </div> <!-- /calendar-agenda -->
+</div> <!-- /calendar-scrollable-container -->

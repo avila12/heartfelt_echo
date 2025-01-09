@@ -17,9 +17,11 @@ app.config["UPLOAD_FOLDER"] = "photos/default"
 app.register_blueprint(main_bp)  # no prefix, so "/" routes remain the same
 app.register_blueprint(admin_bp, url_prefix="/admin")
 
+
 @app.errorhandler(413)
 def too_large(e):
     return "File is too large. Maximum size allowed is 16MB.", 413
+
 
 # Setup scheduler jobs
 setup_jobs()

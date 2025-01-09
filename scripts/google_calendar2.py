@@ -38,16 +38,17 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
             ("Main", main_calendar),
             ("Holiday", holiday_calendar),
         ]:
+            # Use recurring_ical_events to expand recurring events
             for event in recurring_ical_events.of(calendar_obj).between(
                 today, future_date
             ):
                 event_start = event.get("DTSTART").dt
                 event_end = event.get("DTEND").dt if "DTEND" in event else None
 
-                # Handle all-day events
+                # Handle all-day events (date instead of datetime)
                 if isinstance(event_start, datetime):
                     event_start_local = event_start.astimezone(local_tz)
-                else:
+                else:  # It's a date
                     event_start_local = local_tz.localize(
                         datetime.combine(event_start, time.min)
                     )
@@ -55,22 +56,26 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                 if event_end:
                     if isinstance(event_end, datetime):
                         event_end_local = event_end.astimezone(local_tz)
-                    else:
+                    else:  # It's a date
                         event_end_local = local_tz.localize(
                             datetime.combine(event_end, time.min)
                         )
                 else:
                     event_end_local = None
 
+                # Format date in the style you want
                 formatted_date = event_start_local.strftime("%d %B, %A")
                 date_parts = formatted_date.split(" ")
 
+                # We'll use the local date key for forecast lookups (Y-m-d)
                 forecast_date_key = event_start_local.strftime("%Y-%m-%d")
 
+                # Check if the event is all-day
                 is_all_day = event_start_local.time() == time.min and (
                     not event_end_local or event_end_local.time() == time.min
                 )
 
+                # Format times (12-hour format with AM/PM)
                 start_time_12hr = (
                     event_start_local.strftime("%I:%M %p") if not is_all_day else None
                 )
@@ -80,6 +85,7 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                     else None
                 )
 
+                # Fetch the forecast data if a forecast is provided
                 forecast_data = forecast.get(forecast_date_key, {}) if forecast else {}
                 if forecast_data:
                     forecast_data["maxtemp_f"] = safe_round(
@@ -89,6 +95,7 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                         forecast_data.get("mintemp_f")
                     )
 
+                # Build the event dictionary
                 event_dict = {
                     "summary": str(event.get("SUMMARY", "Unnamed Event")),
                     "description": str(event.get("DESCRIPTION", "")),
@@ -107,7 +114,15 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
                     "_start_datetime_obj": event_start_local,
                 }
 
+                # Add to our flat list of events
                 all_events.append(event_dict)
+
+        # Determine the next event
+        upcoming_events = [e for e in all_events if e["_start_datetime_obj"] >= today]
+        upcoming_events.sort(key=lambda e: e["_start_datetime_obj"])
+
+        if upcoming_events:
+            upcoming_events[0]["is_next_event"] = True
 
         # Group events by date
         grouped_events = {}
@@ -115,53 +130,8 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
             formatted_date = e["date"]
             if formatted_date not in grouped_events:
                 grouped_events[formatted_date] = []
-            grouped_events[formatted_date].append(e)
-
-        # Sort events within each date by time
-        for date_key in grouped_events:
-            grouped_events[date_key] = sorted(
-                grouped_events[date_key],
-                key=lambda e: (
-                    e["_start_datetime_obj"].time() if not e["is_all_day"] else time.min
-                ),
-            )
-
-        # Sort the grouped events by date (chronological order)
-        grouped_events = dict(
-            sorted(
-                grouped_events.items(),
-                key=lambda item: min(e["_start_datetime_obj"] for e in item[1]),
-            )
-        )
-
-        # Determine the next event
-        try:
-            next_event_found = False  # Track if the next event has been marked
-            for date_key, events in grouped_events.items():
-                for event in events:
-                    # Compare event's start datetime object with the current datetime
-                    if event["_start_datetime_obj"] >= today:
-                        if not next_event_found:
-                            event["is_next_event"] = True
-                            next_event_found = True
-                        else:
-                            event["is_next_event"] = False
-                    else:
-                        event["is_next_event"] = False
-
-                # Stop checking once the next event is found
-                if next_event_found:
-                    break
-
-            # Remove private `_start_datetime_obj` from output
-            for date_key in grouped_events:
-                grouped_events[date_key] = [
-                    {k: v for k, v in e.items() if k != "_start_datetime_obj"}
-                    for e in grouped_events[date_key]
-                ]
-
-        except Exception as e:
-            logging.debug(f"Error determining the next event: {e}")
+            copy_for_output = {k: v for k, v in e.items() if k != "_start_datetime_obj"}
+            grouped_events[formatted_date].append(copy_for_output)
 
     except requests.exceptions.RequestException as e:
         logging.debug(f"Error fetching calendar data: {e}")
