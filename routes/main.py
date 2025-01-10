@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import config
 from scheduler import scheduler
-from scripts.google_calendar import get_google_calendar_data
+from scripts.google_calendar2 import get_google_calendar_data
 from scripts.monitor_control import set_monitor_state
 from scripts.photo import photo_cycler
 from scripts.weatherapi import (
