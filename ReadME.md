@@ -45,7 +45,7 @@ OS
 
 3. Create .env file:
     ```bash
-    sudo nanao .env
+    sudo nano .env
     ```
 
 4. Modify .env file and Set up environment variables for sensitive data:
@@ -58,7 +58,7 @@ OS
 
 5. Install dependencies:
     ```bash
-    chmod +x install.sh
+    chmod +x setup_kiosk.sh
     ./setup_kiosk.sh
     ```
 

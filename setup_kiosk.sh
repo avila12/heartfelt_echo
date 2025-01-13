@@ -12,17 +12,16 @@ HOSTNAME=$(hostname)
 # Update and upgrade the system
 echo "Updating and upgrading the system..."
 sudo apt update
-sudo apt upgrade -y
+sudo apt upgrade -y || handle_error "Failed to update and upgrade packages"
 
 # Update and install system dependencies
-echo "Updating system and installing dependencies..."
-sudo apt update && sudo apt upgrade -y || handle_error "Failed to update and upgrade packages"
-sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avahi-daemon  python3-rpi.gpio || handle_error "Failed to install required packages"
+echo "Installing system dependencies..."
+sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avahi-daemon python3-rpi.gpio || handle_error "Failed to install required packages"
 
-# Install necessary packages
-echo "Installing necessary packages..."
-sudo apt install --no-install-recommends -y xserver-xorg xinit openbox chromium-browser unclutter
-sudo apt autoremove
+# Install additional necessary packages
+echo "Installing additional necessary packages..."
+sudo apt install --no-install-recommends -y xserver-xorg xinit openbox chromium-browser unclutter || handle_error "Failed to install X/Openbox/Chromium"
+sudo apt autoremove -y
 
 # Variables
 APP_DIR="$HOME/heartfelt_echo"
@@ -30,7 +29,6 @@ STATIC_DIR="$APP_DIR/static"
 PHOTOS_DIR="$APP_DIR/photos"
 SERVICE_FILE="/etc/systemd/system/heartfelt_echo.service"
 NGINX_CONF="/etc/nginx/sites-available/heartfelt_echo"
-KIOSK_DESKTOP="$HOME/.config/autostart/heartfelt_echo_kiosk.desktop"
 
 # Ensure the application directory exists
 cd "$APP_DIR" || handle_error "Failed to access project directory: $APP_DIR"
@@ -49,7 +47,7 @@ else
   echo "No requirements.txt found, skipping installation of Python dependencies."
 fi
 
-# Set permissions
+# Set permissions (consider more restrictive permissions for .env if it holds sensitive data)
 echo "Configuring permissions..."
 sudo chmod 755 .env
 sudo chown -R pi:www-data .env
@@ -98,25 +96,25 @@ server {
     listen 80;
     server_name '"$HOSTNAME"'.local;
 
-    client_max_body_size 16M;  # Adjust this to match Flask's MAX_CONTENT_LENGTH
+    client_max_body_size 16M;  # Adjust as needed
 
     # Handle static files
     location /static/ {
         alias '"$STATIC_DIR"'/;
-        autoindex off; # Optional for debugging, can be removed in production
+        autoindex off;
     }
 
     # Handle photo files
     location /photos/ {
-        alias '"$PHOTOS_DIR"'/; # Use alias for consistency
-        autoindex off; # Optional for debugging, can be removed in production
+        alias '"$PHOTOS_DIR"'/;
+        autoindex off;
     }
 
     location / {
         proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
     error_page 404 /404.html;
@@ -138,40 +136,41 @@ sudo nginx -t || handle_error "Nginx configuration test failed"
 sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
 sudo systemctl status nginx || handle_error "Nginx service failed to start"
 
-
-
-
-
 echo "Configuring Chromium in kiosk mode..."
 
 # Enable autologin for the 'pi' user
 echo "Enabling autologin for user 'pi'..."
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
-echo "[Service]" | sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf
-echo "ExecStart=" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
-echo "ExecStart=-/sbin/agetty --noclear --autologin pi %I \$TERM" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
+{
+  echo "[Service]"
+  echo "ExecStart="
+  echo "ExecStart=-/sbin/agetty --noclear --autologin pi %I \$TERM"
+} | sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf
 
 # Configure the X server to start Chromium in kiosk mode
 echo "Creating .xinitrc file to start Chromium in kiosk mode..."
-echo "#!/bin/bash" > /home/pi/.xinitrc
-echo "xset s off" > /home/pi/.xinitrc
-echo "xset -dpms" > /home/pi/.xinitrc
-echo "xset s noblank" > /home/pi/.xinitrc
-echo "xrandr --output HDMI-1 --rotate left" >> /home/pi/.xinitrc  # Rotate screen to portrait
-echo "chromium-browser --noerrdialogs --kiosk http://$HOSTNAME.local --incognito --disable-translate --start-fullscreen" >> /home/pi/.xinitrc
-
+cat <<EOF > /home/pi/.xinitrc
+#!/bin/bash
+xset s off
+xset -dpms
+xset s noblank
+xrandr --output HDMI-1 --rotate left
+chromium-browser --noerrdialogs --kiosk http://$HOSTNAME.local --incognito --disable-translate --start-fullscreen
+EOF
 
 chmod +x /home/pi/.xinitrc
 
 # Configure the system to start X automatically on login
 echo "Configuring system to start X automatically on login..."
-echo "if [ -z \"\$DISPLAY\" ] && [ \$(tty) = /dev/tty1 ]; then" >> /home/pi/.bash_profile
-echo "  startx" >> /home/pi/.bash_profile
-echo "fi" >> /home/pi/.bash_profile
+{
+  echo "if [ -z \"\$DISPLAY\" ] && [ \$(tty) = /dev/tty1 ]; then"
+  echo "  startx"
+  echo "fi"
+} >> /home/pi/.bash_profile
 
-# Disable desktop GUI (LightDM)
+# Disable desktop GUI (LightDM) if desired
 echo "Disabling LightDM (GUI) to prevent desktop environment..."
-#sudo systemctl disable lightdm
+# sudo systemctl disable lightdm
 
 # Disable screen blanking and power management
 echo "Disabling screen blanking and power management..."
