@@ -9,6 +9,8 @@ from flask import (
     current_app,
 )
 
+from scripts.wifi_conection import is_wifi_connected
+
 admin_bp = Blueprint("admin", __name__)
 
 # Configure upload folder and allowed extensions
@@ -23,6 +25,13 @@ if not os.path.exists(UPLOAD_FOLDER):
 # Function to check allowed file types
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@admin_bp.route("/network-status")
+def network_status():
+    if is_wifi_connected():
+        return jsonify({"status": "connected", "message": "Wi-Fi is active"}), 200
+    return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
 
 
 # Routes

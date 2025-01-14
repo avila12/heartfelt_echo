@@ -21,6 +21,8 @@ sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avah
 # Install additional necessary packages
 echo "Installing additional necessary packages..."
 sudo apt install --no-install-recommends -y xserver-xorg xinit openbox chromium-browser unclutter || handle_error "Failed to install X/Openbox/Chromium"
+sudo apt install hostapd dnsmasq || handle_error "Failed to install X/Openbox/Chromium"
+
 sudo apt autoremove -y
 
 # Variables

@@ -14,6 +14,7 @@ from scripts.weatherapi import (
     fontawesome_icon,
 )
 from scripts.hfe_logging import configure_logging
+from scripts.wifi_conection import is_wifi_connected
 
 logging = configure_logging()
 
@@ -176,6 +177,9 @@ def set_monitor_state_on():
     return jsonify({"state": "on"}), 200
 
 
+# UTIL END POINTS MAYBE MOVE TO ADMIN
+
+
 @main_bp.route("/show-jobs")
 def show_jobs():
     jobs = scheduler.get_jobs()
@@ -186,3 +190,10 @@ def show_jobs():
 def debug_jobs():
     jobs = scheduler.get_jobs()
     return jsonify({"scheduled_jobs": [job.__str__() for job in jobs]}), 200
+
+
+@main_bp.route("/network-status")
+def network_status():
+    if is_wifi_connected():
+        return jsonify({"status": "connected", "message": "Wi-Fi is active"}), 200
+    return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
