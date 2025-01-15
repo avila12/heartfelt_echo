@@ -14,14 +14,21 @@ echo "Updating and upgrading the system..."
 sudo apt update
 sudo apt upgrade -y || handle_error "Failed to update and upgrade packages"
 
-# Update and install system dependencies
-echo "Installing system dependencies..."
-sudo apt install -y chromium-browser python3 python3-pip python3-venv nginx avahi-daemon python3-rpi.gpio || handle_error "Failed to install required packages"
-
-# Install additional necessary packages
-echo "Installing additional necessary packages..."
-sudo apt install --no-install-recommends -y xserver-xorg xinit openbox chromium-browser unclutter || handle_error "Failed to install X/Openbox/Chromium"
-sudo apt install hostapd dnsmasq || handle_error "Failed to install X/Openbox/Chromium"
+sudo apt install -y \
+  chromium-browser \
+  python3 \
+  python3-pip \
+  python3-venv \
+  nginx \
+  avahi-daemon \
+  python3-rpi.gpio \
+  xserver-xorg \
+  xinit \
+  openbox \
+  unclutter \
+  hostapd \
+  dnsmasq \
+  || handle_error "Failed to install required packages"
 
 sudo apt autoremove -y
 
@@ -51,8 +58,8 @@ fi
 
 # Set permissions (consider more restrictive permissions for .env if it holds sensitive data)
 echo "Configuring permissions..."
-sudo chmod 755 .env
-sudo chown -R pi:www-data .env
+sudo chmod 640 .env
+sudo chown pi:www-data .env
 
 for dir in "$STATIC_DIR" "$PHOTOS_DIR"; do
   sudo chmod -R 755 "$dir"
@@ -112,9 +119,9 @@ server {
 
     location / {
         proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     }
 
     error_page 404 /404.html;

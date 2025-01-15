@@ -61,7 +61,13 @@ OS
     chmod +x setup_kiosk.sh
     ./setup_kiosk.sh
     ```
+6. Check logs
+   ```bash
+   sudo systemctl status nginx
+   sudo nginx -t
+   journalctl -xe
 
+   ```
 
 ## Folder Structure
 

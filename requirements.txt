@@ -5,7 +5,9 @@ gunicorn==23.0.0
 APScheduler==3.11.0
 concurrent-log-handler==0.9.25
 icalendar==6.1.0
+recurring_ical_events==3.4.0
 pytz==2024.2
-netifaces
+netifaces==0.11.0
+
 
 
