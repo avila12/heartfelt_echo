@@ -98,15 +98,13 @@ server {
     listen 80;
     server_name '"$HOSTNAME"'.local;
 
-    client_max_body_size 16M;  # Adjust as needed
+    client_max_body_size 16M;
 
-    # Handle static files
     location /static/ {
         alias '"$STATIC_DIR"'/;
         autoindex off;
     }
 
-    # Handle photo files
     location /photos/ {
         alias '"$PHOTOS_DIR"'/;
         autoindex off;
@@ -114,10 +112,9 @@ server {
 
     location / {
         proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     }
 
     error_page 404 /404.html;
@@ -125,7 +122,6 @@ server {
         root /usr/share/nginx/html;
     }
 
-    # Security headers
     add_header X-Frame-Options "DENY";
     add_header X-Content-Type-Options "nosniff";
     add_header X-XSS-Protection "1; mode=block";
