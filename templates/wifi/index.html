@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wi-Fi Manager</title>
+</head>
+<body>
+    <h1>Wi-Fi Manager</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+          <li><strong>{{ category }}:</strong> {{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <h2>Current Wi-Fi Connection</h2>
+    {% if current_conn_id %}
+        <p>Connected to SSID: <strong>{{ current_ssid }}</strong> (Connection ID: {{ current_conn_id }})</p>
+    {% else %}
+        <p><em>No Wi-Fi currently connected</em></p>
+    {% endif %}
+
+    <h2>Saved Connections</h2>
+    {% if saved_conns %}
+        <ul>
+            {% for conn_id, ssid in saved_conns %}
+                <li>ID: <strong>{{ conn_id }}</strong> - SSID: "{{ ssid }}"</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No saved Wi-Fi networks.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('add') }}">Add a Wi-Fi network</a></p>
+    <p><a href="{{ url_for('remove') }}">Remove a Wi-Fi network</a></p>
+</body>
+</html>
