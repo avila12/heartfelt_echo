@@ -54,6 +54,8 @@ else
   echo "No requirements.txt found, skipping installation of Python dependencies."
 fi
 
+git config core.fileMode false
+
 # Set permissions (consider more restrictive permissions for .env if it holds sensitive data)
 echo "Configuring permissions..."
 sudo chmod 640 .env
