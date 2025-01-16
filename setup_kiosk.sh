@@ -6,8 +6,13 @@ handle_error() {
   exit 1
 }
 
-# Get the Raspberry Pi's hostname
-HOSTNAME=$(hostname)
+# Variables
+HOSTNAME=$(hostname) # Get the Raspberry Pi's hostname
+APP_DIR="$HOME/heartfelt_echo"
+STATIC_DIR="$APP_DIR/static"
+PHOTOS_DIR="$APP_DIR/photos"
+SERVICE_FILE="/etc/systemd/system/heartfelt_echo.service"
+NGINX_CONF="/etc/nginx/sites-available/heartfelt_echo"
 
 # Update and upgrade the system
 echo "Updating and upgrading the system..."
@@ -31,13 +36,6 @@ sudo apt install -y \
   || handle_error "Failed to install required packages"
 
 sudo apt autoremove -y
-
-# Variables
-APP_DIR="$HOME/heartfelt_echo"
-STATIC_DIR="$APP_DIR/static"
-PHOTOS_DIR="$APP_DIR/photos"
-SERVICE_FILE="/etc/systemd/system/heartfelt_echo.service"
-NGINX_CONF="/etc/nginx/sites-available/heartfelt_echo"
 
 # Ensure the application directory exists
 cd "$APP_DIR" || handle_error "Failed to access project directory: $APP_DIR"
