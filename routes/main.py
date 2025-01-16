@@ -237,7 +237,7 @@ def change_wifi():
             )
 
         # Schedule a system reboot
-        os.system("sudo reboot")
+        subprocess.run(["sudo", "reboot"])
 
         return "Wi-Fi updated successfully. The Raspberry Pi is restarting..."
     except Exception as e:
