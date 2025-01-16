@@ -76,7 +76,6 @@ def main_index():
     return render_template("index.html", configuration=configuration)
 
 
-
 @main_bp.route("/")
 def index():
     if is_wifi_connected():
@@ -86,7 +85,6 @@ def index():
 
     return render_template("wifi_form.html", configuration={"status": "disconnected"})
     # return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
-
 
 
 @main_bp.route("/app/event")
@@ -214,8 +212,8 @@ def network_status():
     return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
 
 
-@main_bp.route("/set-wifi", methods=["POST"])
-def set_wifi():
+@main_bp.route("/change_wifi", methods=["POST"])
+def change_wifi():
     ssid = request.form.get("ssid")
     password = request.form.get("password")
 
@@ -225,20 +223,22 @@ def set_wifi():
     try:
         # Update wpa_supplicant.conf
         with open(WPA_SUPPLICANT_CONF, "w") as file:
-            file.write(f"""
+            file.write(
+                f"""
             ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
             update_config=1
             country=US
-            
+        
             network={{
                 ssid="{ssid}"
                 psk="{password}"
             }}
-                        """)
+            """
+            )
 
-        # Restart Wi-Fi
-        os.system("sudo wpa_cli -i wlan0 reconfigure")
+        # Schedule a system reboot
+        os.system("sudo reboot")
 
-        return "Wi-Fi updated successfully. Reconnecting..."
+        return "Wi-Fi updated successfully. The Raspberry Pi is restarting..."
     except Exception as e:
         return f"An error occurred: {e}", 500
