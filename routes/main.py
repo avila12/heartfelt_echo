@@ -15,12 +15,14 @@ from scripts.weatherapi import (
     fontawesome_icon,
 )
 from scripts.hfe_logging import configure_logging
-from scripts.wifi_conection import is_wifi_connected
+from scripts.wifi_conection import is_wifi_connected, get_wifi_status
 
 logging = configure_logging()
 
 # Create blueprint for routes
 main_bp = Blueprint("main", __name__)
+
+WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 
 @main_bp.before_request
@@ -112,9 +114,13 @@ def check_wifi():
 
 @main_bp.route("/")
 def index():
-    if not check_wifi():
-        return render_template("wifi_form.html")
-    main_index()
+    if is_wifi_connected():
+        return jsonify({"status": "connected", "message": "Wi-Fi is active"}), 200
+    return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
+
+    # if not check_wifi():
+    #     return render_template("wifi_form.html")
+    # main_index()
 
 
 @main_bp.route("/app/event")
@@ -240,3 +246,33 @@ def network_status():
     if is_wifi_connected():
         return jsonify({"status": "connected", "message": "Wi-Fi is active"}), 200
     return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
+
+
+@main_bp.route("/set-wifi", methods=["POST"])
+def set_wifi():
+    ssid = request.form.get("ssid")
+    password = request.form.get("password")
+
+    if not ssid or not password:
+        return "SSID and Password are required!", 400
+
+    try:
+        # Update wpa_supplicant.conf
+        with open(WPA_SUPPLICANT_CONF, "w") as file:
+            file.write(f"""
+            ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+            update_config=1
+            country=US
+            
+            network={{
+                ssid="{ssid}"
+                psk="{password}"
+            }}
+                        """)
+
+        # Restart Wi-Fi
+        os.system("sudo wpa_cli -i wlan0 reconfigure")
+
+        return "Wi-Fi updated successfully. Reconnecting..."
+    except Exception as e:
+        return f"An error occurred: {e}", 500
