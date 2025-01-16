@@ -18,25 +18,26 @@ def is_wifi_connected(interface="wlan0"):
 
 def update_wifi(ssid, password):
     try:
-        # Update wpa_supplicant.conf
-        with open(WPA_SUPPLICANT_CONF, "w") as file:
-            file.write(
-                f"""
-            ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-            update_config=1
-            country=US
+        # Write to the config file with sudo
+        config_content = f"""
+        ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+        update_config=1
+        country=US
 
-            network={{
-                ssid="{ssid}"
-                psk="{password}"
-            }}
-            """
-            )
+        network={{
+            ssid="{ssid}"
+            psk="{password}"
+        }}
+        """
+        process = subprocess.run(
+            ["sudo", "bash", "-c", f"echo '{config_content}' > {WPA_SUPPLICANT_CONF}"],
+            check=True
+        )
 
         # Schedule a system reboot
-        subprocess.run(["sudo", "reboot"])
+        subprocess.run(["sudo", "reboot"], check=True)
 
         return True
     except Exception as e:
-        print(e.__str__())
+        print(e)
         return False
