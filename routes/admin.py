@@ -1,4 +1,6 @@
 import os
+import subprocess
+
 from flask import (
     Blueprint,
     jsonify,
@@ -9,7 +11,6 @@ from flask import (
     current_app,
 )
 
-from scripts.wifi_conection import is_wifi_connected
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -25,13 +26,6 @@ if not os.path.exists(UPLOAD_FOLDER):
 # Function to check allowed file types
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@admin_bp.route("/network-status")
-def network_status():
-    if is_wifi_connected():
-        return jsonify({"status": "connected", "message": "Wi-Fi is active"}), 200
-    return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
 
 
 # Routes
@@ -63,3 +57,41 @@ def upload_file():
 @admin_bp.route("/uploads/<filename>")
 def uploaded_file(filename):
     return render_template("uploaded.html", filename=filename)
+
+
+@admin_bp.route('/wifi_form')
+def wifi_form():
+    return render_template('wifi_form.html')
+
+
+@admin_bp.route('/set-wifi', methods=['POST'])
+def set_wifi():
+    ssid = request.form['ssid']
+    password = request.form['password']
+
+    if not ssid or not password:
+        return jsonify({'status': 'error', 'message': 'SSID and Password are required'}), 400
+
+    wpa_config = f"""
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    update_config=1
+    country=US
+
+    network={{
+        ssid="{ssid}"
+        psk="{password}"
+    }}
+    """
+    try:
+        with open('/etc/wpa_supplicant/wpa_supplicant.conf', 'w') as file:
+            file.write(wpa_config)
+
+        # Restart Wi-Fi
+        result = subprocess.run(['sudo', 'wpa_cli', '-i', 'wlan0', 'reconfigure'], check=True)
+        if result.returncode == 0:
+            return jsonify({'status': 'success', 'message': 'Wi-Fi updated and restarted'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'Failed to restart Wi-Fi'}), 500
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
