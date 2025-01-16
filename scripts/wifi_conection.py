@@ -34,8 +34,12 @@ def update_wifi(ssid, password):
             check=True
         )
 
+        subprocess.run(["sudo", "systemctl", "stop", "NetworkManager"], check=True)
+        subprocess.run(["sudo", "systemctl", "restart", "wpa_supplicant"], check=True)
+
         # Schedule a system reboot
         subprocess.run(["sudo", "reboot"], check=True)
+
 
         return True
     except Exception as e:
