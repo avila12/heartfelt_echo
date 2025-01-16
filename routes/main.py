@@ -223,4 +223,4 @@ def change_wifi():
         subprocess.run(["sudo", "reboot"])
         return "Wi-Fi updated successfully. The Raspberry Pi is restarting..."
     else:
-        return f"An error occurred: {e}", 500
+        return f"An error occurred", 500
