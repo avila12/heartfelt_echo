@@ -212,7 +212,7 @@ def network_status():
     return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
 
 
-@main_bp.route("/change_wifi", methods=["POST"])
+@main_bp.route("/change-wifi", methods=["POST"])
 def change_wifi():
     ssid = request.form.get("ssid")
     password = request.form.get("password")
