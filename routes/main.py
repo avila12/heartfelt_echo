@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from flask import Blueprint, render_template, jsonify, request, send_file
 from datetime import datetime, timedelta
@@ -33,8 +34,7 @@ def handle_exception(e):
     return jsonify({"error": "An unexpected error occurred"}), 500
 
 
-@main_bp.route("/")
-def index():
+def main_index():
     configuration = {
         # Time configurations
         "timeFormat": config.TIME_FORMAT,
@@ -72,6 +72,22 @@ def index():
         weather_data_type="forecast",
     )
     return render_template("index.html", configuration=configuration)
+
+
+def check_wifi():
+    """Check if the Pi is connected to a Wi-Fi network."""
+    try:
+        output = subprocess.check_output(['iwgetid'])
+        return "connected" in output.decode('utf-8').lower()
+    except subprocess.CalledProcessError:
+        return False
+
+
+@main_bp.route("/")
+def index():
+    if not check_wifi():
+        return render_template("wifi_form.html")
+    main_index()
 
 
 @main_bp.route("/app/event")
