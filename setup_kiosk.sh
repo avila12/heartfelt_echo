@@ -37,6 +37,9 @@ sudo apt install -y \
 
 sudo apt autoremove -y
 
+
+chmod +x "$APP_DIR/scripts/wifi_connection.py"
+
 # Ensure the application directory exists
 cd "$APP_DIR" || handle_error "Failed to access project directory: $APP_DIR"
 
