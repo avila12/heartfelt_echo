@@ -15,14 +15,12 @@ from scripts.weatherapi import (
     fontawesome_icon,
 )
 from scripts.hfe_logging import configure_logging
-from scripts.wifi_conection import is_wifi_connected
+from scripts.wifi_conection import is_wifi_connected, update_wifi
 
 logging = configure_logging()
 
 # Create blueprint for routes
 main_bp = Blueprint("main", __name__)
-
-WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 
 @main_bp.before_request
@@ -220,25 +218,9 @@ def change_wifi():
     if not ssid or not password:
         return "SSID and Password are required!", 400
 
-    try:
-        # Update wpa_supplicant.conf
-        with open(WPA_SUPPLICANT_CONF, "w") as file:
-            file.write(
-                f"""
-            ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-            update_config=1
-            country=US
-        
-            network={{
-                ssid="{ssid}"
-                psk="{password}"
-            }}
-            """
-            )
-
-        # Schedule a system reboot
+    result = update_wifi(ssid, password)
+    if result is True:
         subprocess.run(["sudo", "reboot"])
-
         return "Wi-Fi updated successfully. The Raspberry Pi is restarting..."
-    except Exception as e:
+    else:
         return f"An error occurred: {e}", 500

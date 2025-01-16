@@ -2,6 +2,7 @@ import subprocess
 
 import netifaces
 
+WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 def is_wifi_connected(interface="wlan0"):
     """Check if the given interface is connected to a network."""
@@ -13,3 +14,28 @@ def is_wifi_connected(interface="wlan0"):
     except ValueError:
         pass
     return False
+
+
+def update_wifi(ssid, password):
+    try:
+        # Update wpa_supplicant.conf
+        with open(WPA_SUPPLICANT_CONF, "w") as file:
+            file.write(
+                f"""
+            ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+            update_config=1
+            country=US
+
+            network={{
+                ssid="{ssid}"
+                psk="{password}"
+            }}
+            """
+            )
+
+        # Schedule a system reboot
+        subprocess.run(["sudo", "reboot"])
+
+        return True
+    except Exception as e:
+        return False
