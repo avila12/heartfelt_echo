@@ -15,7 +15,7 @@ from scripts.weatherapi import (
     fontawesome_icon,
 )
 from scripts.hfe_logging import configure_logging
-from scripts.wifi_conection import is_wifi_connected, get_wifi_status
+from scripts.wifi_conection import is_wifi_connected
 
 logging = configure_logging()
 
@@ -76,51 +76,17 @@ def main_index():
     return render_template("index.html", configuration=configuration)
 
 
-def check_wifi():
-    """
-    Check if the Pi is connected to a Wi-Fi network.
-
-    Returns:
-        bool: True if connected, False otherwise.
-    """
-    try:
-        # Run the iwgetid command to get Wi-Fi connection info
-        output = subprocess.check_output(["iwgetid"], timeout=5).decode('utf-8').lower()
-
-        # Log the output for debugging purposes
-        logging.debug(f"iwgetid output: {output}")
-
-        # Check if 'connected' is in the output
-        if "connected" in output:
-            return True
-        else:
-            # Optionally log when not connected but 'iwgetid' ran successfully
-            logging.info("Wi-Fi not connected according to iwgetid.")
-            return False
-
-    except subprocess.CalledProcessError as e:
-        # Log the error if iwgetid fails to run
-        logging.error(f"Error running iwgetid: {e}")
-        return False
-    except subprocess.TimeoutExpired:
-        # Handle the case where the command takes too long
-        logging.error("iwgetid command timed out.")
-        return False
-    except Exception as e:
-        # Catch any other unexpected errors
-        logging.error(f"Unexpected error checking Wi-Fi: {e}")
-        return False
-
 
 @main_bp.route("/")
 def index():
     if is_wifi_connected():
-        return jsonify({"status": "connected", "message": "Wi-Fi is active"}), 200
-    return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
+        # main_index()
+        # return jsonify({"status": "connected", "message": "Wi-Fi is active"}), 200
+        return render_template("wifi_form.html", configuration={"status": "connected"})
 
-    # if not check_wifi():
-    #     return render_template("wifi_form.html")
-    # main_index()
+    return render_template("wifi_form.html", configuration={"status": "disconnected"})
+    # return jsonify({"status": "disconnected", "message": "Wi-Fi is not active"}), 503
+
 
 
 @main_bp.route("/app/event")
