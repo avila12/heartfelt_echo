@@ -75,11 +75,38 @@ def main_index():
 
 
 def check_wifi():
-    """Check if the Pi is connected to a Wi-Fi network."""
+    """
+    Check if the Pi is connected to a Wi-Fi network.
+
+    Returns:
+        bool: True if connected, False otherwise.
+    """
     try:
-        output = subprocess.check_output(["iwgetid"])
-        return "connected" in output.decode("utf-8").lower()
-    except subprocess.CalledProcessError:
+        # Run the iwgetid command to get Wi-Fi connection info
+        output = subprocess.check_output(["iwgetid"], timeout=5).decode('utf-8').lower()
+
+        # Log the output for debugging purposes
+        logging.debug(f"iwgetid output: {output}")
+
+        # Check if 'connected' is in the output
+        if "connected" in output:
+            return True
+        else:
+            # Optionally log when not connected but 'iwgetid' ran successfully
+            logging.info("Wi-Fi not connected according to iwgetid.")
+            return False
+
+    except subprocess.CalledProcessError as e:
+        # Log the error if iwgetid fails to run
+        logging.error(f"Error running iwgetid: {e}")
+        return False
+    except subprocess.TimeoutExpired:
+        # Handle the case where the command takes too long
+        logging.error("iwgetid command timed out.")
+        return False
+    except Exception as e:
+        # Catch any other unexpected errors
+        logging.error(f"Unexpected error checking Wi-Fi: {e}")
         return False
 
 
