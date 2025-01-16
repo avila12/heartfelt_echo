@@ -38,4 +38,5 @@ def update_wifi(ssid, password):
 
         return True
     except Exception as e:
+        print(e.__str__())
         return False
