@@ -77,8 +77,8 @@ def main_index():
 def check_wifi():
     """Check if the Pi is connected to a Wi-Fi network."""
     try:
-        output = subprocess.check_output(['iwgetid'])
-        return "connected" in output.decode('utf-8').lower()
+        output = subprocess.check_output(["iwgetid"])
+        return "connected" in output.decode("utf-8").lower()
     except subprocess.CalledProcessError:
         return False
 
