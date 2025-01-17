@@ -1,8 +1,12 @@
 import logging
-from concurrent_log_handler import ConcurrentRotatingFileHandler
+from logging.handlers import RotatingFileHandler
+import os
 
 
 def configure_logging():
+    # Create logs directory if it doesn't exist
+    os.makedirs("logs", exist_ok=True)
+
     # Create logger
     logger = logging.getLogger("flask_app")
     logger.setLevel(logging.ERROR)
@@ -13,8 +17,8 @@ def configure_logging():
     )
 
     # Concurrent rotating file handler
-    file_handler = ConcurrentRotatingFileHandler(
-        "flask.log", maxBytes=5 * 1024 * 1024, backupCount=5
+    file_handler = RotatingFileHandler(
+        "logs/flask.log", maxBytes=5 * 1024 * 1024, backupCount=5
     )
     file_handler.setLevel(logging.ERROR)
     file_handler.setFormatter(formatter)
