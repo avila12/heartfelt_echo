@@ -36,10 +36,6 @@ sudo apt install -y \
   || handle_error "Failed to install required packages"
 
 sudo apt autoremove -y
-
-
-#chmod +x "$APP_DIR/scripts/wifi_connection.py"
-
 # Ensure the application directory exists
 cd "$APP_DIR" || handle_error "Failed to access project directory: $APP_DIR"
 

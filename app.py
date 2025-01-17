@@ -1,8 +1,7 @@
 from flask import Flask
 from config import FLASK_HOST, FLASK_PORT
-from routes import main_bp, admin_bp, wifi_bp
+from routes import main_bp, admin_bp  # , wifi_bp
 from scheduler import setup_jobs
-from scripts.wifi_conection import is_wifi_connected
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -20,8 +19,9 @@ def too_large(e):
 
 
 # Register routes blueprint
-app.register_blueprint(wifi_bp)  # no prefix, so "/" routes remain the same
-app.register_blueprint(main_bp, url_prefix="/dashboard")
+# app.register_blueprint(wifi_bp)
+app.register_blueprint(main_bp)
+# app.register_blueprint(main_bp, url_prefix="/dashboard")
 app.register_blueprint(admin_bp, url_prefix="/admin")
 
 # Setup scheduler jobs
