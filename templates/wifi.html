@@ -18,44 +18,44 @@
         <button onclick="connectToNetwork()">Connect</button>
     </div>
 
-    <script>
-        function scanNetworks() {
-            fetch('/wifi/scan')
-                .then(response => response.json())
-                .then(data => {
-                    const networkList = document.getElementById('network-list');
-                    networkList.innerHTML = '';
-                    data.forEach((network, index) => {
-                        const li = document.createElement('li');
-                        li.textContent = network.ssid;
-                        li.onclick = function() {
-                            document.getElementById('connect-form').style.display = 'block';
-                            window.selectedSSID = network.ssid;
-                        };
-                        networkList.appendChild(li);
-                    });
-                });
-        }
-
-        function connectToNetwork() {
-            const password = document.getElementById('password').value;
-            if (window.selectedSSID && password) {
-                fetch('/wifi/connect', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        ssid: window.selectedSSID,
-                        password: password,
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message || data.error);
-                });
-            }
-        }
-    </script>
+{#    <script>#}
+{#        function scanNetworks() {#}
+{#            fetch('/wifi/scan')#}
+{#                .then(response => response.json())#}
+{#                .then(data => {#}
+{#                    const networkList = document.getElementById('network-list');#}
+{#                    networkList.innerHTML = '';#}
+{#                    data.forEach((network, index) => {#}
+{#                        const li = document.createElement('li');#}
+{#                        li.textContent = network.ssid;#}
+{#                        li.onclick = function() {#}
+{#                            document.getElementById('connect-form').style.display = 'block';#}
+{#                            window.selectedSSID = network.ssid;#}
+{#                        };#}
+{#                        networkList.appendChild(li);#}
+{#                    });#}
+{#                });#}
+{#        }#}
+{##}
+{#        function connectToNetwork() {#}
+{#            const password = document.getElementById('password').value;#}
+{#            if (window.selectedSSID && password) {#}
+{#                fetch('/wifi/connect', {#}
+{#                    method: 'POST',#}
+{#                    headers: {#}
+{#                        'Content-Type': 'application/json',#}
+{#                    },#}
+{#                    body: JSON.stringify({#}
+{#                        ssid: window.selectedSSID,#}
+{#                        password: password,#}
+{#                    }),#}
+{#                })#}
+{#                .then(response => response.json())#}
+{#                .then(data => {#}
+{#                    alert(data.message || data.error);#}
+{#                });#}
+{#            }#}
+{#        }#}
+{#    </script>#}
 </body>
 </html>
