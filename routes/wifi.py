@@ -1,6 +1,6 @@
 from flask import render_template, request, jsonify, Blueprint
-# import subprocess
-# import time
+import subprocess
+import time
 
 
 # Create blueprint for routes
