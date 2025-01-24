@@ -4,7 +4,8 @@ import time
 
 def get_available_wifi():
     """
-    Fetch and display all available Wi-Fi networks using nmcli, ensuring a fresh scan.
+    Fetch and display all available Wi-Fi networks using nmcli, ensuring a fresh scan,
+    and eliminate duplicate SSIDs from the output.
     """
     try:
         # Check if `nmcli` is installed
@@ -29,12 +30,15 @@ def get_available_wifi():
         print(f"{'SSID':<25} {'Signal':<10} {'Bars':<10} {'Security':<10}")
         print("-" * 50)
 
-        # Parse and display the networks
+        # Parse and eliminate duplicate networks
+        seen_networks = set()  # Use a set to store unique SSIDs
         networks = result.splitlines()
         for network in networks:
             ssid, signal, bars, security = network.split(":")
             ssid = ssid if ssid else "<Hidden>"  # Handle hidden networks
-            print(f"{ssid:<25} {signal:<10} {bars:<10} {security:<10}")
+            if ssid not in seen_networks:
+                seen_networks.add(ssid)
+                print(f"{ssid:<25} {signal:<10} {bars:<10} {security:<10}")
 
         print("-" * 50)
 
