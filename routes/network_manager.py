@@ -1,207 +1,94 @@
-#!/usr/bin/env python3
+from flask import Flask, render_template, request, jsonify, Blueprint
+import subprocess
+import time
 
-import os
-import uuid
 
-from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint
-import NetworkManager
-
+# Create blueprint for routes
 wifi_bp = Blueprint("main", __name__)
-wifi_bp.secret_key = "1234"  # testing only will move to env after
 
 
-def get_wifi_device():
-    """Return the first Wi-Fi device managed by NetworkManager or None if not found."""
-    for dev in NetworkManager.NetworkManager.GetDevices():
-        if dev.DeviceType == NetworkManager.NM_DEVICE_TYPE_WIFI:
-            return dev
-    return None
-
-
-def get_current_connection():
+def get_available_wifi():
     """
-    Return (connection_id, ssid) of currently active Wi-Fi, or (None, None) if none active.
+    Fetch and display all available Wi-Fi networks using nmcli,
+    and return the list of unique SSIDs.
     """
-    for c in NetworkManager.NetworkManager.ActiveConnections:
-        if c.Connection.GetSettings().get('connection', {}).get('type') == '802-11-wireless':
-            conn_id = c.Connection.GetSettings()['connection']['id']
-            ssid = c.Connection.GetSettings()['802-11-wireless']['ssid'].decode("utf-8", "ignore")
-            return conn_id, ssid
-    return None, None
+    try:
+        # Trigger a Wi-Fi scan
+        subprocess.run(['nmcli', 'dev', 'wifi', 'rescan'], check=True)
+        time.sleep(2)
+
+        # Get available Wi-Fi networks
+        result = subprocess.check_output(['nmcli', '-t', '-f', 'SSID,SIGNAL,BARS,SECURITY', 'dev', 'wifi']).decode()
+
+        # Parse and eliminate duplicate networks
+        seen_networks = set()
+        available_networks = []
+        networks = result.splitlines()
+        for network in networks:
+            ssid, signal, bars, security = network.split(":")
+            ssid = ssid if ssid else "<Hidden>"  # Handle hidden networks
+            if ssid not in seen_networks:
+                seen_networks.add(ssid)
+                available_networks.append({
+                    "ssid": ssid,
+                    "signal": signal,
+                    "bars": bars,
+                    "security": security
+                })
+
+        return available_networks
+
+    except subprocess.CalledProcessError as e:
+        return {"error": f"Failed to fetch Wi-Fi networks. Error: {e}"}
+    except Exception as ex:
+        return {"error": f"An unexpected error occurred: {ex}"}
 
 
-def list_saved_connections():
+def connect_to_wifi(ssid, password):
     """
-    Return a list of (connection_id, ssid) for all Wi-Fi connections saved in NetworkManager.
+    Connect to a Wi-Fi network using nmcli.
     """
-    results = []
-    for c in NetworkManager.Settings.ListConnections():
-        settings = c.GetSettings()
-        if settings.get('connection', {}).get('type') == '802-11-wireless':
-            conn_id = settings['connection']['id']
-            ssid_bytes = settings['802-11-wireless'].get('ssid', b'')
-            ssid = ssid_bytes.decode("utf-8", "ignore")
-            results.append((conn_id, ssid))
-    return results
+    try:
+        known_networks = subprocess.check_output(
+            ['nmcli', '-t', '-f', 'NAME', 'connection', 'show']
+        ).decode().splitlines()
 
+        if ssid in known_networks:
+            subprocess.run(['nmcli', 'connection', 'up', ssid], check=True)
+        else:
+            subprocess.run(['nmcli', 'dev', 'wifi', 'connect', ssid, 'password', password], check=True)
 
-def create_or_update_wifi(ssid, password, connection_id=None):
-    """
-    Create or update a Wi-Fi connection in NetworkManager with the given SSID and password.
-    """
-    if not connection_id:
-        connection_id = f"WiFi-{ssid}"
+        return {"message": f"Successfully connected to '{ssid}'."}
 
-    new_connection = {
-        "connection": {
-            "id": connection_id,
-            "type": "802-11-wireless",
-            "uuid": str(uuid.uuid4()),
-        },
-        "802-11-wireless": {
-            "ssid": ssid.encode("utf-8"),
-            "mode": "infrastructure",
-            "security": "802-11-wireless-security",
-        },
-        "802-11-wireless-security": {
-            "key-mgmt": "wpa-psk",
-            "psk": password,
-        },
-        "ipv4": {"method": "auto"},
-        "ipv6": {"method": "auto"},
-    }
-
-    # Check if the connection already exists
-    existing = None
-    for c in NetworkManager.Settings.ListConnections():
-        s = c.GetSettings()
-        if s['connection']['id'] == connection_id:
-            existing = c
-            break
-
-    if existing:
-        existing.Update(new_connection)
-        return f"Updated existing connection '{connection_id}'."
-    else:
-        NetworkManager.Settings.AddConnection(new_connection)
-        return f"Created new connection '{connection_id}'."
-
-
-def activate_wifi(connection_id):
-    """Activate (connect to) a saved Wi-Fi connection by its connection ID."""
-    wifi_dev = get_wifi_device()
-    if not wifi_dev:
-        raise RuntimeError("No Wi-Fi device found or Wi-Fi not managed by NetworkManager.")
-
-    # Find the connection
-    target_connection = None
-    for c in NetworkManager.Settings.ListConnections():
-        s = c.GetSettings()
-        if s['connection']['id'] == connection_id:
-            target_connection = c
-            break
-
-    if not target_connection:
-        raise RuntimeError(f"No connection with ID '{connection_id}' found.")
-
-    NetworkManager.NetworkManager.ActivateConnection(target_connection, wifi_dev, "/")
-
-
-def remove_wifi(connection_id):
-    """
-    Remove a Wi-Fi connection from NetworkManager’s saved connections.
-    (Does not necessarily disconnect if currently connected.)
-    """
-    for c in NetworkManager.Settings.ListConnections():
-        s = c.GetSettings()
-        if s['connection']['id'] == connection_id:
-            c.Delete()
-            return f"Removed connection '{connection_id}'"
-    return f"No connection '{connection_id}' found."
+    except subprocess.CalledProcessError as e:
+        return {"error": f"Failed to connect to '{ssid}'. Error: {e}"}
+    except Exception as ex:
+        return {"error": f"An unexpected error occurred: {ex}"}
 
 
 @wifi_bp.route('/')
 def index():
-    """
-    Main page: show currently connected Wi-Fi, all saved Wi-Fi connections,
-    and links to add or remove connections.
-    """
-    current_conn_id, current_ssid = get_current_connection()
-    saved_conns = list_saved_connections()
-    return render_template(
-        'index.html',
-        current_conn_id=current_conn_id,
-        current_ssid=current_ssid,
-        saved_conns=saved_conns
-    )
+    return render_template('wifi_form.html')
 
 
-@wifi_bp.route('/add', methods=['GET', 'POST'])
-def add():
-    """
-    GET: Show a form to add a Wi-Fi network (SSID, password, optional connection ID).
-    POST: Create or update that Wi-Fi network in NetworkManager, then activate it.
-    """
-    if request.method == 'POST':
-        ssid = request.form.get('ssid', '').strip()
-        password = request.form.get('password', '').strip()
-        connection_id = request.form.get('connection_id', '').strip() or None
-
-        if not ssid or not password:
-            flash("SSID and password are required.", "error")
-            return redirect(url_for('add'))
-
-        msg = create_or_update_wifi(ssid, password, connection_id)
-        flash(msg, "info")
-
-        # Now attempt to activate
-        actual_id = connection_id or f"WiFi-{ssid}"
-        try:
-            activate_wifi(actual_id)
-            flash(f"Activating connection '{actual_id}'...", "info")
-        except Exception as e:
-            flash(f"Failed to activate: {e}", "error")
-
-        return redirect(url_for('index'))
-    else:
-        return render_template('add.html')
+@wifi_bp.route('/scan', methods=['GET'])
+def scan_networks():
+    networks = get_available_wifi()
+    if 'error' in networks:
+        return jsonify(networks), 500
+    return jsonify(networks)
 
 
-@wifi_bp.route('/remove', methods=['GET', 'POST'])
-def remove():
-    """
-    GET: Show a form that lists all saved Wi-Fi networks with a remove button.
-    POST: Remove the selected Wi-Fi connection from NetworkManager.
-    """
-    if request.method == 'POST':
-        connection_id = request.form.get('connection_id', '').strip()
-        if connection_id:
-            msg = remove_wifi(connection_id)
-            flash(msg, "info")
-        else:
-            flash("No connection ID provided.", "error")
-        return redirect(url_for('remove'))
-    else:
-        # show a list of all saved Wi-Fi connections
-        saved_conns = list_saved_connections()
-        return render_template('remove.html', saved_conns=saved_conns)
+@wifi_bp.route('/connect', methods=['POST'])
+def connect_network():
+    ssid = request.json.get('ssid')
+    password = request.json.get('password')
 
+    if not ssid or not password:
+        return jsonify({"error": "SSID and password are required."}), 400
 
-@wifi_bp.route('/status')
-def status():
-    """
-    Simple API-like endpoint returning current Wi-Fi status (connected SSID or not).
-    """
-    conn_id, ssid = get_current_connection()
-    if conn_id:
-        return {
-            "connected": True,
-            "connection_id": conn_id,
-            "ssid": ssid
-        }
-    else:
-        return {
-            "connected": False,
-            "connection_id": None,
-            "ssid": None
-        }
+    response = connect_to_wifi(ssid, password)
+
+    if 'error' in response:
+        return jsonify(response), 500
+    return jsonify(response)

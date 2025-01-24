@@ -3,16 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Change Wi-Fi</title>
+    <title>Wi-Fi Connection</title>
 </head>
 <body>
-    <h1>Change Wi-Fi Access Point -- {{ configuration['status'] }}</h1>
-    <form action="/change-wifi" method="post">
-        <label for="ssid">SSID:</label>
-        <input type="text" id="ssid" name="ssid" required><br><br>
+    <h1>Wi-Fi Connection App</h1>
+
+    <button onclick="scanNetworks()">Scan for Networks</button>
+    <ul id="network-list"></ul>
+
+    <div id="connect-form" style="display: none;">
+        <h2>Connect to Network</h2>
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <button type="submit">Connect</button>
-    </form>
+        <input type="password" id="password" />
+        <button onclick="connectToNetwork()">Connect</button>
+    </div>
+
+    <script>
+        function scanNetworks() {
+            fetch('/wifi/scan')
+                .then(response => response.json())
+                .then(data => {
+                    const networkList = document.getElementById('network-list');
+                    networkList.innerHTML = '';
+                    data.forEach((network, index) => {
+                        const li = document.createElement('li');
+                        li.textContent = network.ssid;
+                        li.onclick = function() {
+                            document.getElementById('connect-form').style.display = 'block';
+                            window.selectedSSID = network.ssid;
+                        };
+                        networkList.appendChild(li);
+                    });
+                });
+        }
+
+        function connectToNetwork() {
+            const password = document.getElementById('password').value;
+            if (window.selectedSSID && password) {
+                fetch('/wifi/connect', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ssid: window.selectedSSID,
+                        password: password,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || data.error);
+                });
+            }
+        }
+    </script>
 </body>
 </html>
