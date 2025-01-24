@@ -66,8 +66,13 @@ OS
    sudo systemctl status nginx
    sudo nginx -t
    journalctl -xe
-
    ```
+6. update code
+   ```bash  
+   sudo systemctl restart heartfelt_echo
+   sudo systemctl restart nginx
+   ```
+
 
 ## Folder Structure
 

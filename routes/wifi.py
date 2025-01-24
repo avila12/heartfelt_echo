@@ -68,7 +68,7 @@ def connect_to_wifi(ssid, password):
 
 @wifi_bp.route('/')
 def wifi_index():
-    return render_template('wifi_form.html')
+    return render_template('wifi.html')
 
 
 @wifi_bp.route('/scan', methods=['GET'])
