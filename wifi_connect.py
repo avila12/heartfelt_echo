@@ -52,7 +52,8 @@ def connect_to_wifi(ssid, password):
     try:
         # Check if the network is already known
         known_networks = subprocess.check_output(
-            ['nmcli', '-t', '-f', 'SSID', 'connection', 'show']).decode().splitlines()
+            ['nmcli', '-t', '-f', 'NAME', 'connection', 'show']
+        ).decode().splitlines()
 
         if ssid in known_networks:
             print(f"Network '{ssid}' already known. Connecting...")
