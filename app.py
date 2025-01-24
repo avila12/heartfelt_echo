@@ -20,7 +20,7 @@ def too_large(e):
 
 # Register routes blueprint
 app.register_blueprint(main_bp)
-# app.register_blueprint(wifi_bp, url_prefix="/wifi")
+app.register_blueprint(wifi_bp, url_prefix="/wifi")
 app.register_blueprint(admin_bp, url_prefix="/admin")
 
 # Setup scheduler jobs

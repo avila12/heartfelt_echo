@@ -4,7 +4,7 @@ import time
 
 
 # Create blueprint for routes
-wifi_bp = Blueprint("main", __name__)
+wifi_bp = Blueprint("wifi_bp", __name__)
 
 
 def get_available_wifi():
@@ -67,7 +67,7 @@ def connect_to_wifi(ssid, password):
 
 
 @wifi_bp.route('/')
-def index():
+def wifi_index():
     return render_template('wifi_form.html')
 
 
