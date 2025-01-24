@@ -6,6 +6,12 @@ handle_error() {
   exit 1
 }
 
+# Check if the user is root
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root. Please use sudo."
+    exit 1
+fi
+
 # Variables
 HOSTNAME=$(hostname) # Get the Raspberry Pi's hostname
 APP_DIR="$HOME/heartfelt_echo"
@@ -141,6 +147,51 @@ sudo ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/
 sudo nginx -t || handle_error "Nginx configuration test failed"
 sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
 sudo systemctl status nginx || handle_error "Nginx service failed to start"
+
+# new code
+echo "Setting up permissions for nmcli..."
+
+# Get the username of the user running the script
+read -p "Enter the username to grant nmcli permissions: " USERNAME
+
+# Validate the username
+if id "$USERNAME" &>/dev/null; then
+    echo "Granting $USERNAME permission to use nmcli without sudo..."
+else
+    echo "Error: User $USERNAME does not exist."
+    exit 1
+fi
+
+# Add nmcli to sudoers for the specified user
+SUDOERS_LINE="$USERNAME ALL=(ALL) NOPASSWD: /usr/bin/nmcli"
+if ! grep -Fxq "$SUDOERS_LINE" /etc/sudoers; then
+    echo "$SUDOERS_LINE" >> /etc/sudoers
+    echo "Added nmcli permissions to sudoers for $USERNAME."
+else
+    echo "User $USERNAME already has permissions for nmcli."
+fi
+
+# Enable Wi-Fi if disabled
+echo "Enabling Wi-Fi..."
+nmcli radio wifi on
+
+# Check and start NetworkManager if not running
+if ! systemctl is-active --quiet NetworkManager; then
+    echo "Starting NetworkManager..."
+    systemctl start NetworkManager
+    systemctl enable NetworkManager
+    echo "NetworkManager started and enabled to run at boot."
+else
+    echo "NetworkManager is already running."
+fi
+
+echo "Setup complete. You can now run the Flask app!"
+
+
+# end new code
+
+
+
 
 echo "Configuring Chromium in kiosk mode..."
 
