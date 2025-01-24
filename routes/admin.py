@@ -27,7 +27,7 @@ def allowed_file(filename):
 
 
 # Routes
-@admin_bp.route("/dashboard")
+@admin_bp.route("/")
 def dashboard():
     return jsonify({"message": "Welcome to the admin dashboard!"})
 
