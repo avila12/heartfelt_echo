@@ -161,6 +161,8 @@ sudo systemctl status nginx || handle_error "Nginx service failed to start"
 
 # new code
 echo "Setting up permissions for nmcli..."
+sudo chown -R pi:pi /etc/NetworkManager/system-connections
+sudo chmod -R 600 /etc/NetworkManager/system-connections
 
 # Get the username of the user running the script
 # read -p "Enter the username to grant nmcli permissions [default: pi]: " USERNAME
@@ -174,7 +176,6 @@ else
 fi
 
 echo "pi ALL=(ALL) NOPASSWD: /usr/bin/nmcli" | sudo tee -a /etc/sudoers
-
 
 # Validate the username
 if id "$USERNAME" &>/dev/null; then
