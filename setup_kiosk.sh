@@ -7,10 +7,10 @@ handle_error() {
 }
 
 # Check if the user is root
-if [[ $EUID -ne 0 ]]; then
-    echo "This script must be run as root. Please use sudo."
-    exit 1
-fi
+#if [[ $EUID -ne 0 ]]; then
+#    echo "This script must be run as root. Please use sudo."
+#    exit 1
+#fi
 
 # Variables
 HOSTNAME=$(hostname) # Get the Raspberry Pi's hostname
