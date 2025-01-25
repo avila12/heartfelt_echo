@@ -163,7 +163,7 @@ sudo systemctl status nginx || handle_error "Nginx service failed to start"
 echo "Setting up permissions for nmcli..."
 
 # Get the username of the user running the script
-read -p "Enter the username to grant nmcli permissions [default: pi]: " USERNAME
+# read -p "Enter the username to grant nmcli permissions [default: pi]: " USERNAME
 USERNAME=${USERNAME:-pi}  # Default to 'pi' if no input is provided
 
 if id "$USERNAME" &>/dev/null; then
