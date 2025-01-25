@@ -14,7 +14,7 @@ fi
 
 # Variables
 HOSTNAME=$(hostname) # Get the Raspberry Pi's hostname
-APP_DIR="$HOME/heartfelt_echo"
+APP_DIR="/home/pi/heartfelt_echo"
 STATIC_DIR="$APP_DIR/static"
 PHOTOS_DIR="$APP_DIR/photos"
 SERVICE_FILE="/etc/systemd/system/heartfelt_echo.service"
