@@ -16,7 +16,8 @@ def connect_to_wifi(ssid, password):
         return {"message": f"Successfully connected to '{ssid}'."}
 
     except subprocess.CalledProcessError as e:
-        return {"error": f"Failed to connect to '{ssid}'. Error: {e}"}
+        # return {"error": f"Failed to connect to '{ssid}'. Error: {e}"}
+        return {"error": f"Failed to connect to '{ssid}'. Command: {e.cmd}, Output: {e.output.decode()} Error: {e}"}
     except Exception as ex:
         return {"error": f"An unexpected error occurred: {ex}"}
 
