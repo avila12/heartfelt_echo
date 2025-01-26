@@ -55,7 +55,3 @@ def get_available_wifi():
         return {"error": f"Failed to fetch Wi-Fi networks. Error: {e}"}
     except Exception as ex:
         return {"error": f"An unexpected error occurred: {ex}"}
-
-if __name__ == "__main__":
-    networks = get_available_wifi()
-    print(networks)
