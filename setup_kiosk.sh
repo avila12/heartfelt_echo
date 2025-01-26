@@ -50,6 +50,20 @@ sudo apt install -y \
 
 sudo apt autoremove -y
 
+echo "Configuring netdev..."
+
+sudo usermod -aG netdev pi
+
+echo "Configuring Polkit..."
+sudo bash -c 'cat <<EOF > '"$POLKIT_CONF"'
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.NetworkManager.wifi.scan" &&
+        subject.isInGroup("netdev")) {
+        return polkit.Result.YES;
+    }
+});
+EOF'
+
 # Ensure the application directory exists
 cd "$APP_DIR" || handle_error "Failed to access project directory: $APP_DIR"
 
@@ -154,26 +168,6 @@ sudo ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/
 sudo nginx -t || handle_error "Nginx configuration test failed"
 sudo systemctl restart nginx || handle_error "Failed to restart Nginx"
 sudo systemctl status nginx || handle_error "Nginx service failed to start"
-
-
-
-
-echo "Configuring netdev..."
-
-sudo usermod -aG netdev pi
-
-echo "Configuring Polkit..."
-sudo bash -c 'cat <<EOF > '"$POLKIT_CONF"'
-polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.NetworkManager.wifi.scan" &&
-        subject.isInGroup("netdev")) {
-        return polkit.Result.YES;
-    }
-});
-EOF'
-
-
-
 
 echo "Configuring Chromium in kiosk mode..."
 
