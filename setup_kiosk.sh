@@ -15,7 +15,7 @@ STATIC_DIR="$APP_DIR/static"
 PHOTOS_DIR="$APP_DIR/photos"
 SERVICE_FILE="/etc/systemd/system/heartfelt_echo.service"
 NGINX_CONF="/etc/nginx/sites-available/heartfelt_echo"
-POLKIT_CONF="/etc/polkit-1/rules.d/10-networkmanager.rules"
+#POLKIT_CONF="/etc/polkit-1/rules.d/10-networkmanager.rules"
 
 # Ensure the application directory exists
 echo "Checking application directory..."
@@ -50,19 +50,19 @@ sudo apt install -y \
 
 sudo apt autoremove -y
 
-echo "Configuring netdev..."
-
-sudo usermod -aG netdev pi
-
-echo "Configuring Polkit..."
-sudo bash -c 'cat <<EOF > '"$POLKIT_CONF"'
-polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.NetworkManager.wifi.scan" &&
-        subject.isInGroup("netdev")) {
-        return polkit.Result.YES;
-    }
-});
-EOF'
+#echo "Configuring netdev..."
+#
+#sudo usermod -aG netdev pi
+#
+#echo "Configuring Polkit..."
+#sudo bash -c 'cat <<EOF > '"$POLKIT_CONF"'
+#polkit.addRule(function(action, subject) {
+#    if (action.id == "org.freedesktop.NetworkManager.wifi.scan" &&
+#        subject.isInGroup("netdev")) {
+#        return polkit.Result.YES;
+#    }
+#});
+#EOF'
 
 # Ensure the application directory exists
 cd "$APP_DIR" || handle_error "Failed to access project directory: $APP_DIR"
