@@ -15,6 +15,8 @@ STATIC_DIR="$APP_DIR/static"
 PHOTOS_DIR="$APP_DIR/photos"
 SERVICE_FILE="/etc/systemd/system/heartfelt_echo.service"
 NGINX_CONF="/etc/nginx/sites-available/heartfelt_echo"
+
+chmod +x /home/pi/heartfelt_echo/scripts/wifi_manager.sh
 #POLKIT_CONF="/etc/polkit-1/rules.d/10-networkmanager.rules"
 
 # Ensure the application directory exists
