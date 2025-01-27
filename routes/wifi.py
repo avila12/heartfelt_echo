@@ -1,8 +1,6 @@
 from flask import render_template, request, jsonify, Blueprint
 
-import subprocess
-
-script_path = "./home/pi/heartfelt_echo/scripts/wifi_manager.sh"
+from scripts.wifi_connector import get_available_wifi, connect_to_wifi
 
 # Create blueprint for routes
 wifi_bp = Blueprint("wifi_bp", __name__)
@@ -14,9 +12,7 @@ def wifi_index():
 
 @wifi_bp.route('/scan', methods=['GET'])
 def scan_networks():
-    # networks = get_available_wifi()
-
-    networks = subprocess.run([script_path, "list"], capture_output=True, text=True)
+    networks = get_available_wifi()
 
     if 'error' in networks:
         return jsonify(networks), 500
@@ -31,7 +27,7 @@ def connect_network():
     if not ssid or not password:
         return jsonify({"error": "SSID and password are required."}), 400
 
-    response = subprocess.run([script_path, "connect", ssid, password], capture_output=True, text=True)
+    response = connect_to_wifi(ssid, password)
 
     if 'error' in response:
         return jsonify(response), 500
