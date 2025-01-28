@@ -43,7 +43,6 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
             ("Holiday", holiday_calendar),
         ]:
             # Use recurring_ical_events to expand recurring events
-            # for event in recurring_ical_events.of(calendar_obj).between(today, future_date):
             for event in recurring_ical_events.of(calendar_obj).between(today_start, future_date):
                 event_start = event.get("DTSTART").dt
                 event_end = event.get("DTEND").dt if "DTEND" in event else None
@@ -127,14 +126,27 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
         if upcoming_events:
             upcoming_events[0]["is_next_event"] = True
 
+        # Sort the flat list by actual datetime
+        all_events.sort(key=lambda e: e["_start_datetime_obj"])
+
         # Group events by date
         grouped_events = {}
+
         for e in all_events:
-            formatted_date = e["date"]
-            if formatted_date not in grouped_events:
-                grouped_events[formatted_date] = []
+            date_key = e["date"]  # e.g., "27 January, Monday"
+            if date_key not in grouped_events:
+                grouped_events[date_key] = []
+            # Exclude the _start_datetime_obj when finalizing
             copy_for_output = {k: v for k, v in e.items() if k != "_start_datetime_obj"}
-            grouped_events[formatted_date].append(copy_for_output)
+            grouped_events[date_key].append(copy_for_output)
+
+
+        # for e in all_events:
+        #     formatted_date = e["date"]
+        #     if formatted_date not in grouped_events:
+        #         grouped_events[formatted_date] = []
+        #     copy_for_output = {k: v for k, v in e.items() if k != "_start_datetime_obj"}
+        #     grouped_events[formatted_date].append(copy_for_output)
 
     except requests.exceptions.RequestException as e:
         logging.debug(f"Error fetching calendar data: {e}")
