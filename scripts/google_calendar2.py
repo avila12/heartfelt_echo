@@ -16,6 +16,10 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
 
     local_tz = pytz.timezone(config.TIMEZONE)
 
+    today = datetime.now(tz=local_tz)
+    # Shift to midnight
+    today_start = today.replace(hour=0, minute=0, second=0, microsecond=0)
+
     try:
         # Fetch the main calendar iCal data
         response = requests.get(url)
@@ -39,9 +43,8 @@ def get_google_calendar_data(url, holiday_url, days=1, forecast=None):
             ("Holiday", holiday_calendar),
         ]:
             # Use recurring_ical_events to expand recurring events
-            for event in recurring_ical_events.of(calendar_obj).between(
-                today, future_date
-            ):
+            # for event in recurring_ical_events.of(calendar_obj).between(today, future_date):
+            for event in recurring_ical_events.of(calendar_obj).between(today_start, future_date):
                 event_start = event.get("DTSTART").dt
                 event_end = event.get("DTEND").dt if "DTEND" in event else None
 
