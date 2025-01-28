@@ -1,6 +1,6 @@
 <div class="calendar-scrollable-container">
     <div class="calendar-agenda">
-        {% for date, events in grouped_events|dictsort(by='key') %}
+        {% for date, events in grouped_events %}
             <div class="day-container">
                 <div class="agenda-day-header">
                     <span class="agenda-day-header-num">
