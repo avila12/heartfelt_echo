@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from flask import Blueprint, render_template, jsonify, request, send_file
 from datetime import datetime, timedelta
@@ -189,5 +190,36 @@ def show_jobs():
 def debug_jobs():
     jobs = scheduler.get_jobs()
     return jsonify({"scheduled_jobs": [job.__str__() for job in jobs]}), 200
+
+
+@main_bp.route('/pull', methods=['POST'])
+def pull_repo():
+    """
+    Endpoint to pull the latest changes from GitHub.
+    You might want to protect this route with some
+    form of authentication or a secret token.
+    """
+    # Path to your local git repository
+    repo_path = "/home/pi/heartfelt_echo"
+
+    # Run 'sudo git pull' in that directory
+    result = subprocess.run(["sudo", "git", "pull"], cwd=repo_path, capture_output=True, text=True)
+
+    # Return the output for debugging/confirmation
+    if result.returncode == 0:
+        return f"Git pull successful:\n{result.stdout}", 200
+    else:
+        return f"Git pull failed:\n{result.stderr}", 500
+
+
+@main_bp.route('/reboot', methods=['POST'])
+def reboot_pi():
+    """
+    Endpoint to reboot the Raspberry Pi.
+    Again, consider adding authentication or restricting access.
+    """
+    # Run 'sudo reboot'
+    subprocess.Popen(["sudo", "reboot"])
+    return "Reboot command issued. The system will go down shortly.", 200
 
 
