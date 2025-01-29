@@ -9,17 +9,30 @@ def connect_to_wifi(ssid, password):
         ).decode().splitlines()
 
         if ssid in known_networks:
-            subprocess.run(['nmcli', 'connection', 'up', ssid], check=True)
+            # We already have a connection profile, bring it up
+            subprocess.run(
+                ['nmcli', 'connection', 'up', ssid],
+                check=True,
+                capture_output=True,
+                text=True
+            )
         else:
-            subprocess.run(['nmcli', 'dev', 'wifi', 'connect', ssid, 'password', password], check=True)
+            # Connect to a new network
+            subprocess.run(
+                ['nmcli', 'dev', 'wifi', 'connect', ssid, 'password', password],
+                check=True,
+                capture_output=True,
+                text=True
+            )
 
         return {"message": f"Successfully connected to '{ssid}'."}
 
     except subprocess.CalledProcessError as e:
-        # return {"error": f"Failed to connect to '{ssid}'. Error: {e}"}
-        return {"error": f"Failed to connect to '{ssid}'. Command: {e.cmd}, Output: {e.output.decode()} Error: {e}"}
+        # e.stderr or e.stdout will contain the nmcli output if we used capture_output=True
+        return {"error": f"Failed to connect to '{ssid}'. nmcli output: {e.stderr or e.stdout}"}
     except Exception as ex:
         return {"error": f"An unexpected error occurred: {ex}"}
+
 
 def get_available_wifi():
     """
